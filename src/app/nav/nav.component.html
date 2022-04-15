@@ -1,8 +1,20 @@
-<mat-toolbar color="primary" class="app-header">
-    <span>Machine Witness</span>
-    <span class="nav-tool-items">
-      <a mat-button routerLink="login" routerLinkActive="active">Log in</a>
-      <a mat-button mat-raised-button routerLink="register" routerLinkActive="active">Register</a>
-    </span>
-  </mat-toolbar>
-  <router-outlet></router-outlet>
+<div class="wrapper">
+  <mat-toolbar color="primary">
+  <button mat-icon-button [mat-menu-trigger-for]="menu" >
+    <mat-icon>menu</mat-icon>
+  </button>
+  <mat-menu #menu="matMenu" class="customize">
+    <button mat-menu-item routerLink="login" routerLinkActive="active" *ngIf="!isLoggedIn">
+      <mat-icon>login</mat-icon>
+      <span>Login</span>
+    </button>
+
+    <button mat-menu-item *ngIf="isLoggedIn" (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      <span>Logout</span>
+    </button>
+  </mat-menu>
+  <span class="spacer">Machine Witness</span>
+  <span *ngIf="isLoggedIn">{{username}}</span>
+</mat-toolbar>
+</div>
