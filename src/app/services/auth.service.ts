@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
-
-const baseUrl:string = 'http://localhost:8080'
+const baseUrl:string = environment.API_URL;
 
 interface RegisterResult{
   id: number,

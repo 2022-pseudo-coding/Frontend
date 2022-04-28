@@ -4,16 +4,23 @@ import { AuthService } from '../services/auth.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { catchError, throwError } from 'rxjs';
 
+
 @Component({
-  selector: 'app-scene',
-  templateUrl: './scene.component.html',
-  styleUrls: ['./scene.component.css']
+  selector: 'app-world',
+  templateUrl: './world.component.html'
 })
-export class SceneComponent implements OnInit {
+export class WorldComponent implements OnInit {
 
   constructor(private router:Router, private authService: AuthService) { }
 
   ngOnInit(): void {
+    //TODO this part is commented for testing three.js
+    //this.redirect();
+
+
+  }
+
+  redirect(): void{
     if(!localStorage.getItem('token')){
       this.router.navigate(['login']);
     }else{
