@@ -26,6 +26,7 @@ import { SceneDirective } from './world/basics/scene.directive';
 import { ProblemComponent } from './world/problem/problem.component';
 import { LightDirective } from './world/basics/light.directive';
 import { BallDirective } from './world/mesh/ball.directive';
+import { GroundDirective } from './world/mesh/ground.directive';
 
 @NgModule({
   declarations: [
@@ -43,7 +44,8 @@ import { BallDirective } from './world/mesh/ball.directive';
     ProblemComponent,
     LightDirective,
     BallDirective,
-    
+    GroundDirective,
+   
   ],
   imports: [
     BrowserModule,

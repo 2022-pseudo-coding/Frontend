@@ -1,9 +1,10 @@
 import { AfterViewInit, Component, ViewChild, ElementRef, ContentChild, Input, OnDestroy } from '@angular/core';
 import { SceneDirective } from './basics/scene.directive';
 import * as THREE from 'three';
-import CameraControls from 'camera-controls';
-
-CameraControls.install({THREE});
+import { Player } from './entity/player'
+import * as ORBIT from 'three/examples/jsm/controls/OrbitControls';
+import * as CANNON from 'cannon';
+import { Vector3 } from 'three';
 
 
 @Component({
@@ -22,7 +23,10 @@ export class RendererWorldComponent implements AfterViewInit {
 
   renderer!: THREE.WebGLRenderer;
   camera!: THREE.PerspectiveCamera;
-  cameraControls!: CameraControls;
+  world!: CANNON.World;
+
+  myPlayer!: Player;
+  keyPressed: Map<string, boolean> = new Map();
 
   constructor() {
     if (this.mode === 'fullscreen') {
@@ -43,34 +47,51 @@ export class RendererWorldComponent implements AfterViewInit {
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    /**GLTF */
+    this.renderer.outputEncoding = THREE.sRGBEncoding;
 
     this.camera = new THREE.PerspectiveCamera(75, this.width / this.height, 0.1, 100);
-    this.camera.position.set(0, 18, 18);
-    this.camera.lookAt(0, 0, 0);
+    this.camera.position.set(1, 11, 10);
 
     this.adjustAspect();
     this.initWindowEvt();
 
-    /* init controls */
-    this.cameraControls = new CameraControls(this.camera, this.renderer.domElement);
 
-    // TODO dragControls
+    const orbitControls = new ORBIT.OrbitControls(this.camera, this.renderer.domElement);
+    orbitControls.enableDamping = true;
+    orbitControls.minDistance = 5;
+    orbitControls.maxDistance = 20;
+    orbitControls.enablePan = false;
+    orbitControls.maxPolarAngle = Math.PI / 2 - 0.05;
 
-    //animation loop
+    orbitControls.target = new Vector3(0, 10, 0);
+    orbitControls.update();
+    
+    this.myPlayer = new Player(this.scene, 'blueBot', this.keyPressed, this.camera, orbitControls);
+
     const clock = new THREE.Clock();
     let animationId: number;
     const renderLoop = () => {
+
       const delta = clock.getDelta();
 
+      this.myPlayer.update(delta);
+
+      orbitControls.update();
+
+      // cameraControls.update(delta);
       //TODO update physics
-      this.cameraControls.update(delta);
 
       this.renderer.render(this.scene.object, this.camera);
 
       animationId = requestAnimationFrame(renderLoop);
     };
 
-    renderLoop();
+    this.myPlayer.load().then(result => {
+      renderLoop();
+    });
+
+    this.initSocket();
   }
 
   adjustAspect(): void {
@@ -93,5 +114,32 @@ export class RendererWorldComponent implements AfterViewInit {
 
       this.adjustAspect();
     });
+
+
+    window.addEventListener('keydown', e => {
+      this.keyPressed.set(e.key.toLowerCase(), true); 
+    });
+    window.addEventListener('keyup', e => {
+      this.keyPressed.set(e.key.toLowerCase(), false);
+    });
+  }
+
+  initSocket(): void {
+
+  }
+
+  initFps(): void {
+    /* init controls */
+    // this.fpsControls = new PointerLockControls(this.camera, this.renderer.domElement);
+
+    // this.scene.add(this.fpsControls.getObject());
+  }
+
+  initCannon(): void {
+    this.world = new CANNON.World();
+  }
+
+  updatePhysics(): void {
+
   }
 }

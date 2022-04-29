@@ -5,7 +5,6 @@ import { AbstractObjectDirective } from '../basics/abstract-object.directive';
 @Directive({
   selector: 'three-mesh-ball',
   providers: [{ provide: AbstractObjectDirective, useExisting: forwardRef(() => BallDirective) }]
-
 })
 export class BallDirective extends AbstractObjectDirective<Mesh> implements AfterViewInit {
 

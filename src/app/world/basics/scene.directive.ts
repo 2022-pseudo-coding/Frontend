@@ -28,4 +28,7 @@ export class SceneDirective extends AbstractObjectDirective<Scene> implements Af
     return result;
   }
 
+  add(obj: any): void{
+    this.object.add(obj);
+  }
 }
