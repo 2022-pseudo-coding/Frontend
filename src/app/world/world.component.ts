@@ -1,8 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { catchError, throwError } from 'rxjs';
+import { catchError, retry, throwError } from 'rxjs';
+import { DataService } from '../services/data.service';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogComponent } from '../dialog/dialog.component';
 
 
 @Component({
@@ -11,25 +14,29 @@ import { catchError, throwError } from 'rxjs';
 })
 export class WorldComponent implements OnInit {
 
-  constructor(private router:Router, private authService: AuthService) { }
+  constructor(private router: Router,
+    private authService: AuthService,
+    private dataService: DataService,
+    private dialog: MatDialog) { }
 
   ngOnInit(): void {
-    //TODO this part is commented for testing three.js
-    //this.redirect();
-
-
+    this.redirect();
   }
 
-  redirect(): void{
-    if(!localStorage.getItem('token')){
+  redirect(): void {
+    if (!localStorage.getItem('token')) {
       this.router.navigate(['login']);
-    }else{
+    } else {
       // refresh and may expire token
       this.authService.refresh()
-      .pipe(catchError((error: HttpErrorResponse) => {
-        this.router.navigate(['login']);
-        return throwError(() => new Error('Something bad happened!'))
-      }));
+        .pipe(catchError((error: HttpErrorResponse) => {
+          localStorage.clear();
+          this.dataService.isLoggedIn.next(false);
+
+          this.router.navigate(['login']);
+          return throwError(() => new Error('Something bad happened!'))
+        })).subscribe((result: any) => {
+        });
     }
   }
 

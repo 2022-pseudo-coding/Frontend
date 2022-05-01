@@ -14,7 +14,6 @@ export class GroundDirective extends AbstractObjectDirective<THREE.Mesh> impleme
     const loader = new THREE.TextureLoader();
 
     let tex = loader.load('../../../assets/tex/ground.jpg');
-    console.log(tex);
     let material = new THREE.MeshBasicMaterial({
       map: tex
     });

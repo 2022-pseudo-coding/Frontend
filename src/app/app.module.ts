@@ -6,7 +6,7 @@ import { AngularMaterialModule } from './angular-material.module';
 import { AppRoutingModule } from './app-routing.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 /* Project Components */
 import { AppComponent } from './app.component';
@@ -16,7 +16,6 @@ import { NavComponent } from './nav/nav.component';
 import { WorldComponent } from './world/world.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { DialogComponent } from './dialog/dialog.component';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './services/auth.interceptor';
 import { DataService } from './services/data.service';
 import { RendererWorldComponent } from './world/renderer-world.component';
@@ -27,6 +26,11 @@ import { ProblemComponent } from './world/problem/problem.component';
 import { LightDirective } from './world/basics/light.directive';
 import { BallDirective } from './world/mesh/ball.directive';
 import { GroundDirective } from './world/mesh/ground.directive';
+import { SocketIoConfig, SocketIoModule } from 'ngx-socket-io';
+import { environment } from 'src/environments/environment';
+import { PlayerService } from './services/player.service';
+
+const config: SocketIoConfig = { url: environment.SOCKET_URL, options: {autoConnect: false} };
 
 @NgModule({
   declarations: [
@@ -45,7 +49,6 @@ import { GroundDirective } from './world/mesh/ground.directive';
     LightDirective,
     BallDirective,
     GroundDirective,
-   
   ],
   imports: [
     BrowserModule,
@@ -55,13 +58,14 @@ import { GroundDirective } from './world/mesh/ground.directive';
     FlexLayoutModule,
     FormsModule,
     ReactiveFormsModule,
-    HttpClientModule
+    HttpClientModule,
+    SocketIoModule.forRoot(config)
   ],
   providers: [{
     provide: HTTP_INTERCEPTORS,
     useClass: AuthInterceptor,
     multi: true
-  }, DataService,
+  }, DataService, PlayerService
   ],
   bootstrap: [AppComponent]
 })

@@ -31,4 +31,8 @@ export class SceneDirective extends AbstractObjectDirective<Scene> implements Af
   add(obj: any): void{
     this.object.add(obj);
   }
+
+  remove(obj: any): void{
+    this.object.remove(obj);
+  }
 }

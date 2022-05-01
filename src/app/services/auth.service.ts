@@ -13,7 +13,8 @@ interface RegisterResult{
 interface LoginResult{
   role: string,
   token: string,
-  message: string
+  message: string,
+  modelName: string
 }
 
 
@@ -28,11 +29,11 @@ export class AuthService {
     return this.http.post<LoginResult>(baseUrl + '/login', {username, password, type: 'user'});
   }
 
-  register(username: string, password: string){
-    return this.http.post<RegisterResult>(baseUrl + '/register', {username, password});
+  register(username: string, password: string, modelName: string){
+    return this.http.post<RegisterResult>(baseUrl + '/register', {username, password, modelName});
   }
 
   refresh(){
-    return this.http.post(baseUrl + '/refresh', {});
+    return this.http.get(baseUrl + '/refresh');
   }
 }

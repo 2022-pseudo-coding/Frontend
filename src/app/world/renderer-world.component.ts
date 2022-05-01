@@ -5,16 +5,17 @@ import { Player } from './entity/player'
 import * as ORBIT from 'three/examples/jsm/controls/OrbitControls';
 import * as CANNON from 'cannon';
 import { Vector3 } from 'three';
+import { PlayerService } from '../services/player.service';
+import { OtherPlayer } from './entity/other-player';
 
 
 @Component({
   selector: 'three-renderer-world',
   template: '<canvas #canvas></canvas>'
 })
-export class RendererWorldComponent implements AfterViewInit {
+export class RendererWorldComponent implements AfterViewInit, OnDestroy {
   width!: number;
   height!: number;
-  @Input() mode: string = "fullscreen";
 
   @ViewChild('canvas') canvasReference!: ElementRef;
   get canvas(): HTMLCanvasElement { return this.canvasReference.nativeElement; }
@@ -27,16 +28,11 @@ export class RendererWorldComponent implements AfterViewInit {
 
   myPlayer!: Player;
   keyPressed: Map<string, boolean> = new Map();
+  otherPlayers: { [key: string]: OtherPlayer } = {};
 
-  constructor() {
-    if (this.mode === 'fullscreen') {
-      this.width = window.innerWidth;
-      this.height = window.innerHeight;
-    } else if (this.mode === 'xxxx') {
-      //TODO
-      this.width = 300;
-      this.height = 200;
-    }
+  constructor(private playerService:PlayerService) {
+    this.width = window.innerWidth;
+    this.height = window.innerHeight;
   }
 
   ngAfterViewInit() {
@@ -66,8 +62,8 @@ export class RendererWorldComponent implements AfterViewInit {
 
     orbitControls.target = new Vector3(0, 10, 0);
     orbitControls.update();
-    
-    this.myPlayer = new Player(this.scene, 'blueBot', this.keyPressed, this.camera, orbitControls);
+
+    this.myPlayer = new Player(this.scene, this.keyPressed, this.camera, orbitControls, localStorage.getItem('username')!);
 
     const clock = new THREE.Clock();
     let animationId: number;
@@ -79,19 +75,25 @@ export class RendererWorldComponent implements AfterViewInit {
 
       orbitControls.update();
 
-      // cameraControls.update(delta);
+      // TODO
+      this.playerService.myMove(this.myPlayer.quaternion, this.myPlayer.walkDir, this.myPlayer.activeAction, this.myPlayer.position);
+
+      Object.keys(this.otherPlayers).forEach(key => {
+        this.otherPlayers[key].update(delta);
+      });
+
       //TODO update physics
 
       this.renderer.render(this.scene.object, this.camera);
 
       animationId = requestAnimationFrame(renderLoop);
     };
-
-    this.myPlayer.load().then(result => {
+    
+    this.myPlayer.load(localStorage.getItem('modelName')!).then(() => {
       renderLoop();
+      this.initSocket();
+      this.playerService.connect();
     });
-
-    this.initSocket();
   }
 
   adjustAspect(): void {
@@ -102,22 +104,14 @@ export class RendererWorldComponent implements AfterViewInit {
 
   initWindowEvt(): void {
     window.addEventListener('resize', () => {
-      if (this.mode === 'fullscreen') {
-        this.width = window.innerWidth;
-        this.height = window.innerHeight;
-
-      } else if (this.mode === 'xxxx') {
-        //TODO
-        this.width = 123;
-        this.height = 123;
-      }
+      this.width = window.innerWidth;
+      this.height = window.innerHeight;
 
       this.adjustAspect();
     });
 
-
     window.addEventListener('keydown', e => {
-      this.keyPressed.set(e.key.toLowerCase(), true); 
+      this.keyPressed.set(e.key.toLowerCase(), true);
     });
     window.addEventListener('keyup', e => {
       this.keyPressed.set(e.key.toLowerCase(), false);
@@ -125,21 +119,45 @@ export class RendererWorldComponent implements AfterViewInit {
   }
 
   initSocket(): void {
-
+    this.playerService.onMyJoin().subscribe((resp: any) => {
+      for (let one of resp.others) {
+        const player = new OtherPlayer(this.scene, one.username);
+        player.load(one.modelName).then(() => {
+          this.otherPlayers[one.id] = player;
+        });
+      }
+    });
+    this.playerService.onOthersJoin().subscribe((one: any) => {
+      if(one.username && one.id){
+        const player = new OtherPlayer(this.scene, one.username);
+        player.load(one.modelName).then(() => {
+          this.otherPlayers[one.id] = player;
+        })
+      }
+      
+    });
+    this.playerService.onOthersQuit().subscribe((id: any) => {
+      this.otherPlayers[id].dispose();
+      delete this.otherPlayers[id];
+    });
+    this.playerService.onOthersMove().subscribe((resp: any) => {
+      Object.keys(this.otherPlayers).forEach(key => {
+        let temp = resp[key];
+        this.otherPlayers[key].setState(temp.quaternion, temp.walkDir, temp.currentAction, temp.position);
+      })
+    });
   }
 
-  initFps(): void {
-    /* init controls */
-    // this.fpsControls = new PointerLockControls(this.camera, this.renderer.domElement);
-
-    // this.scene.add(this.fpsControls.getObject());
-  }
-
+  //TODO CANNON
   initCannon(): void {
     this.world = new CANNON.World();
   }
 
   updatePhysics(): void {
 
+  }
+
+  ngOnDestroy(): void {
+    this.playerService.disconnect();
   }
 }

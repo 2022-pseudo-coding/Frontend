@@ -61,6 +61,7 @@ export class LoginComponent implements OnInit {
           // success
           localStorage.setItem('token', result.token);
           localStorage.setItem('username', username);
+          localStorage.setItem('modelName', result.modelName);
           this.openDialog('Welcome!', 'Welcome to Machine Witness!');
         }else{
           // failed
