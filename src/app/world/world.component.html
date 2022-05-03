@@ -1,5 +1,6 @@
+<mat-spinner mode="indeterminate" *ngIf="!loaded"></mat-spinner>
 <div id="wrapper">
-    <three-renderer-world>
+    <three-renderer-world (loadedEmitter)="setLoaded($event)">
         <three-scene>
             <three-light mode="hemi" [position]="[0, 50, 0]"></three-light>
             <three-light mode="dir" [position]="[-1, 2, 1]"></three-light>

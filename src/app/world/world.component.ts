@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { catchError, retry, throwError } from 'rxjs';
+import { catchError, EMPTY, Observable, retry, throwError } from 'rxjs';
 import { DataService } from '../services/data.service';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogComponent } from '../dialog/dialog.component';
@@ -10,9 +10,11 @@ import { DialogComponent } from '../dialog/dialog.component';
 
 @Component({
   selector: 'app-world',
-  templateUrl: './world.component.html'
+  templateUrl: './world.component.html',
+  styleUrls: ['./world.component.css']
 })
 export class WorldComponent implements OnInit {
+  loaded:boolean = false;
 
   constructor(private router: Router,
     private authService: AuthService,
@@ -29,15 +31,18 @@ export class WorldComponent implements OnInit {
     } else {
       // refresh and may expire token
       this.authService.refresh()
-        .pipe(catchError((error: HttpErrorResponse) => {
+        .pipe(catchError(err => {
           localStorage.clear();
           this.dataService.isLoggedIn.next(false);
-
           this.router.navigate(['login']);
-          return throwError(() => new Error('Something bad happened!'))
+          return EMPTY;
         })).subscribe((result: any) => {
         });
     }
+  }
+
+  setLoaded(loaded:boolean){
+    this.loaded = loaded;
   }
 
 }

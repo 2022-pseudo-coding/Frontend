@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ViewChild, ElementRef, ContentChild, Input, OnDestroy } from '@angular/core';
+import { AfterViewInit, Component, ViewChild, ElementRef, ContentChild, Input, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { SceneDirective } from './basics/scene.directive';
 import * as THREE from 'three';
 import { Player } from './entity/player'
@@ -21,6 +21,7 @@ export class RendererWorldComponent implements AfterViewInit, OnDestroy {
   get canvas(): HTMLCanvasElement { return this.canvasReference.nativeElement; }
 
   @ContentChild(SceneDirective) scene!: SceneDirective
+  @Output() loadedEmitter = new EventEmitter<boolean>();
 
   renderer!: THREE.WebGLRenderer;
   camera!: THREE.PerspectiveCamera;
@@ -91,8 +92,9 @@ export class RendererWorldComponent implements AfterViewInit, OnDestroy {
     
     this.myPlayer.load(localStorage.getItem('modelName')!).then(() => {
       renderLoop();
-      this.initSocket();
+      this.loadedEmitter.emit(true);
       this.playerService.connect();
+      this.initSocket();
     });
   }
 
