@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { Location } from '@angular/common';
-import { LoginComponent } from '../login/login.component';
 import { DataService } from '../services/data.service';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-nav',
@@ -11,26 +11,36 @@ import { DataService } from '../services/data.service';
 })
 export class NavComponent implements OnInit {
 
-  username:string = localStorage.getItem('username') as string;
-  isLoggedIn:boolean;
+  username: string = localStorage.getItem('username') as string;
+  isLoggedIn: boolean;
+  mapId!: string;
 
-  constructor(private router:Router, private location: Location, private dataService:DataService) {
+  constructor(private router: Router, private route: ActivatedRoute, private dataService: DataService) {
     this.dataService.isLoggedIn.subscribe(val => {
       this.isLoggedIn = val;
       this.username = localStorage.getItem('username') as string;
     });
 
-    if(localStorage.getItem('token')){
+    if (localStorage.getItem('token')) {
       this.isLoggedIn = true;
-    }else{
+    } else {
       this.isLoggedIn = false;
     }
   }
 
   ngOnInit(): void {
+    this.router.events.pipe(
+      filter(event =>
+        event instanceof NavigationEnd
+      )
+    ).subscribe(event => {
+      let temp = (event as any).url.split('?')[0].split('/').pop();
+      this.mapId = temp ? temp : 'camp';
+    })
+
   }
 
-  logout(): void{
+  logout(): void {
     localStorage.clear();
     this.isLoggedIn = false;
     this.router.navigate(['login']);

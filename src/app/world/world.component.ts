@@ -1,11 +1,9 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { HttpErrorResponse } from '@angular/common/http';
-import { catchError, EMPTY, Observable, retry, throwError } from 'rxjs';
+import { catchError, EMPTY } from 'rxjs';
 import { DataService } from '../services/data.service';
 import { MatDialog } from '@angular/material/dialog';
-import { DialogComponent } from '../dialog/dialog.component';
 
 
 @Component({
@@ -14,15 +12,15 @@ import { DialogComponent } from '../dialog/dialog.component';
   styleUrls: ['./world.component.css']
 })
 export class WorldComponent implements OnInit {
-  loaded:boolean = false;
+  loaded: boolean = false;
 
   constructor(private router: Router,
     private authService: AuthService,
-    private dataService: DataService,
-    private dialog: MatDialog) { }
+    private dataService: DataService) { }
 
   ngOnInit(): void {
-    this.redirect();
+    //todo
+    // this.redirect();
   }
 
   redirect(): void {
@@ -41,7 +39,7 @@ export class WorldComponent implements OnInit {
     }
   }
 
-  setLoaded(loaded:boolean){
+  setLoaded(loaded: boolean) {
     this.loaded = loaded;
   }
 

@@ -1,6 +1,6 @@
 import { AfterViewInit, Directive, Input, forwardRef } from '@angular/core';
 import { AbstractObjectDirective } from './abstract-object.directive';
-import { Light, HemisphereLight, DirectionalLight } from 'three';
+import { Light, HemisphereLight, DirectionalLight, AmbientLight } from 'three';
 
 @Directive({
   selector: 'three-light',
@@ -35,6 +35,9 @@ export class LightDirective extends AbstractObjectDirective<Light> implements Af
         light.shadow.camera.bottom = - d;
         light.shadow.camera.far = 3500;
         light.shadow.bias = - 0.0001;
+        break;
+      case 'ambient':
+        light = new AmbientLight(0xffffff, 0.8);
         break;
     }
     this.object = light as Light;

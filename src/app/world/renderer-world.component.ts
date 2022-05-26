@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ViewChild, ElementRef, ContentChild, Input, OnDestroy, Output, EventEmitter } from '@angular/core';
+import { AfterViewInit, Component, ViewChild, ElementRef, ContentChild, Input, OnDestroy, Output, EventEmitter, OnInit } from '@angular/core';
 import { SceneDirective } from './basics/scene.directive';
 import * as THREE from 'three';
 import { Player } from './entity/player'
@@ -7,13 +7,16 @@ import * as CANNON from 'cannon';
 import { Vector3 } from 'three';
 import { PlayerService } from '../services/player.service';
 import { OtherPlayer } from './entity/other-player';
+import { WorldMap } from './entity/world-map';
+import { ActivatedRoute } from '@angular/router';
+import CannonDebugger from 'cannon-es-debugger';
 
 
 @Component({
   selector: 'three-renderer-world',
   template: '<canvas #canvas></canvas>'
 })
-export class RendererWorldComponent implements AfterViewInit, OnDestroy {
+export class RendererWorldComponent implements AfterViewInit, OnDestroy, OnInit {
   width!: number;
   height!: number;
 
@@ -31,9 +34,17 @@ export class RendererWorldComponent implements AfterViewInit, OnDestroy {
   keyPressed: Map<string, boolean> = new Map();
   otherPlayers: { [key: string]: OtherPlayer } = {};
 
-  constructor(private playerService:PlayerService) {
+  worldMap!: WorldMap;
+  mapId!: string;
+
+  constructor(private playerService: PlayerService, private route: ActivatedRoute) {
     this.width = window.innerWidth;
     this.height = window.innerHeight;
+  }
+
+  ngOnInit(): void {
+    let temp = this.route.snapshot.routeConfig?.path;
+    this.mapId = temp ? temp: 'camp';
   }
 
   ngAfterViewInit() {
@@ -47,12 +58,11 @@ export class RendererWorldComponent implements AfterViewInit, OnDestroy {
     /**GLTF */
     this.renderer.outputEncoding = THREE.sRGBEncoding;
 
-    this.camera = new THREE.PerspectiveCamera(75, this.width / this.height, 0.1, 100);
-    this.camera.position.set(1, 11, 10);
+    this.camera = new THREE.PerspectiveCamera(75, this.width / this.height, 0.1, 800);
+    this.camera.position.set(0, 10, 10);
 
     this.adjustAspect();
     this.initWindowEvt();
-
 
     const orbitControls = new ORBIT.OrbitControls(this.camera, this.renderer.domElement);
     orbitControls.enableDamping = true;
@@ -64,7 +74,13 @@ export class RendererWorldComponent implements AfterViewInit, OnDestroy {
     orbitControls.target = new Vector3(0, 10, 0);
     orbitControls.update();
 
-    this.myPlayer = new Player(this.scene, this.keyPressed, this.camera, orbitControls, localStorage.getItem('username')!);
+    this.initCannon();
+
+    this.myPlayer = new Player(this.scene, this.keyPressed, this.camera, orbitControls, localStorage.getItem('username')!, this.world);
+    this.worldMap = new WorldMap(this.scene, this.mapId, this.world);
+
+    //todo
+    const debug = new (CannonDebugger as any)(this.scene.object, this.world as any);
 
     const clock = new THREE.Clock();
     let animationId: number;
@@ -72,25 +88,29 @@ export class RendererWorldComponent implements AfterViewInit, OnDestroy {
 
       const delta = clock.getDelta();
 
+      this.renderPhysics();
+      
       this.myPlayer.update(delta);
-
+      
       orbitControls.update();
 
-      // TODO
       this.playerService.myMove(this.myPlayer.quaternion, this.myPlayer.walkDir, this.myPlayer.activeAction, this.myPlayer.position);
 
       Object.keys(this.otherPlayers).forEach(key => {
         this.otherPlayers[key].update(delta);
       });
 
-      //TODO update physics
+      
+      debug.update();
 
       this.renderer.render(this.scene.object, this.camera);
 
       animationId = requestAnimationFrame(renderLoop);
     };
-    
+
+    this.worldMap.load().then(() => { });
     this.myPlayer.load(localStorage.getItem('modelName')!).then(() => {
+      this.myPlayer.addPhysics();
       renderLoop();
       this.loadedEmitter.emit(true);
       this.playerService.connect();
@@ -130,13 +150,13 @@ export class RendererWorldComponent implements AfterViewInit, OnDestroy {
       }
     });
     this.playerService.onOthersJoin().subscribe((one: any) => {
-      if(one.username && one.id){
+      if (one.username && one.id) {
         const player = new OtherPlayer(this.scene, one.username);
         player.load(one.modelName).then(() => {
           this.otherPlayers[one.id] = player;
         })
       }
-      
+
     });
     this.playerService.onOthersQuit().subscribe((id: any) => {
       this.otherPlayers[id].dispose();
@@ -150,16 +170,26 @@ export class RendererWorldComponent implements AfterViewInit, OnDestroy {
     });
   }
 
-  //TODO CANNON
   initCannon(): void {
     this.world = new CANNON.World();
+    this.world.doProfiling = true;
+    this.world.allowSleep = true;
+    this.world.solver.iterations = 50;
+    this.world.defaultContactMaterial.contactEquationStiffness = 5e6;
+    this.world.defaultContactMaterial.contactEquationRelaxation = 16;
+    this.world.gravity.set(0, -10, 0);
+    this.world.quatNormalizeSkip = 0;
+    this.world.quatNormalizeFast = false;
+    this.world.broadphase = new CANNON.NaiveBroadphase();
   }
 
-  updatePhysics(): void {
-
+  renderPhysics(): void {
+    this.world.step(1/60);
   }
 
   ngOnDestroy(): void {
     this.playerService.disconnect();
+    this.myPlayer.dispose();
+    this.worldMap.dispose();
   }
 }

@@ -11,27 +11,18 @@ export class GroundDirective extends AbstractObjectDirective<THREE.Mesh> impleme
   constructor() { super(); }
 
   override ngAfterViewInit(): void {
-    const loader = new THREE.TextureLoader();
 
-    let tex = loader.load('../../../assets/tex/ground.jpg');
-    let material = new THREE.MeshBasicMaterial({
-      map: tex
+    let material = new THREE.MeshLambertMaterial({
+      color: 0x00ebc0
     });
 
-    this.wrapAndRepeatTexture(material.map!);
-
     this.object = new THREE.Mesh(
-      new THREE.PlaneBufferGeometry(80, 80, 100, 100),
+      new THREE.PlaneBufferGeometry(10000, 10000),
       material
     );
     this.object.receiveShadow = true;
     this.object.rotation.x = - Math.PI / 2;
     super.ngAfterViewInit();
-  }
-
-  wrapAndRepeatTexture(map: THREE.Texture): void {
-    // map.wrapS = map.wrapT = THREE.RepeatWrapping
-    map.repeat.x = map.repeat.y = 1
   }
 
 }

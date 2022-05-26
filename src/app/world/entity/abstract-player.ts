@@ -21,7 +21,7 @@ export class AbstractPlayer{
         return new Promise((resolve, reject) => {
             loader.load(baseUrl + 'model.fbx', object => {
                 object.scale.set(.075, .075, .075);
-                object.position.set(0, 0, 0);
+                object.position.set(0, 10, 0);
                 object.rotation.y = Math.PI;
                 object.traverse(node => {
                     if ((node as THREE.Mesh).isMesh) {

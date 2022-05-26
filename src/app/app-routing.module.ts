@@ -7,7 +7,15 @@ import { ProblemComponent } from './world/problem/problem.component';
 import { WorldComponent } from './world/world.component';
 
 const routes: Routes = [
-  { path: '', component: WorldComponent },
+  {
+    path: 'world', children: [
+      { path: 'forest', component: WorldComponent },
+      { path: 'camp', component: WorldComponent },
+      { path: 'island', component: WorldComponent },
+      { path: '**', component: PageNotFoundComponent }
+    ]
+  },
+  { path: '', redirectTo: '/world/camp', pathMatch: 'full' },
   { path: 'problem', component: ProblemComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },

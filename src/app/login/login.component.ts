@@ -42,7 +42,7 @@ export class LoginComponent implements OnInit {
     dialogRef.afterClosed().subscribe(res => {
       if (title === 'Welcome!') {
         this.dataService.isLoggedIn.next(true);
-        this.router.navigate([""]);
+        this.router.navigate(["/world/camp"]);
       }
     });
   }
