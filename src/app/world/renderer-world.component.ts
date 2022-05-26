@@ -44,7 +44,7 @@ export class RendererWorldComponent implements AfterViewInit, OnDestroy, OnInit 
 
   ngOnInit(): void {
     let temp = this.route.snapshot.routeConfig?.path;
-    this.mapId = temp ? temp: 'camp';
+    this.mapId = temp ? temp : 'camp';
   }
 
   ngAfterViewInit() {
@@ -89,9 +89,9 @@ export class RendererWorldComponent implements AfterViewInit, OnDestroy, OnInit 
       const delta = clock.getDelta();
 
       this.renderPhysics();
-      
+
       this.myPlayer.update(delta);
-      
+
       orbitControls.update();
 
       this.playerService.myMove(this.myPlayer.quaternion, this.myPlayer.walkDir, this.myPlayer.activeAction, this.myPlayer.position);
@@ -100,7 +100,6 @@ export class RendererWorldComponent implements AfterViewInit, OnDestroy, OnInit 
         this.otherPlayers[key].update(delta);
       });
 
-      
       debug.update();
 
       this.renderer.render(this.scene.object, this.camera);
@@ -108,13 +107,15 @@ export class RendererWorldComponent implements AfterViewInit, OnDestroy, OnInit 
       animationId = requestAnimationFrame(renderLoop);
     };
 
-    this.worldMap.load().then(() => { });
+
     this.myPlayer.load(localStorage.getItem('modelName')!).then(() => {
-      this.myPlayer.addPhysics();
-      renderLoop();
-      this.loadedEmitter.emit(true);
-      this.playerService.connect();
-      this.initSocket();
+      this.worldMap.load().then(() => {
+        this.myPlayer.addPhysics();
+        renderLoop();
+        this.loadedEmitter.emit(true);
+        this.playerService.connect();
+        this.initSocket();
+      });
     });
   }
 
@@ -184,7 +185,7 @@ export class RendererWorldComponent implements AfterViewInit, OnDestroy, OnInit 
   }
 
   renderPhysics(): void {
-    this.world.step(1/60);
+    this.world.step(1 / 60);
   }
 
   ngOnDestroy(): void {

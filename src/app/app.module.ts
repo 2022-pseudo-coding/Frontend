@@ -26,6 +26,7 @@ import { ProblemComponent } from './world/problem/problem.component';
 import { LightDirective } from './world/basics/light.directive';
 import { BallDirective } from './world/mesh/ball.directive';
 import { GroundDirective } from './world/mesh/ground.directive';
+import { FloorDirective } from './world/mesh/floor.directive';
 import { SocketIoConfig, SocketIoModule } from 'ngx-socket-io';
 import { environment } from 'src/environments/environment';
 import { PlayerService } from './services/player.service';
@@ -49,6 +50,7 @@ const config: SocketIoConfig = { url: environment.SOCKET_URL, options: {autoConn
     LightDirective,
     BallDirective,
     GroundDirective,
+    FloorDirective,
   ],
   imports: [
     BrowserModule,

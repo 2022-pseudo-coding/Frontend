@@ -127,7 +127,7 @@ export class Player extends AbstractPlayer {
             mass: 10,
             allowSleep: false,
             fixedRotation: true,
-            position: new CANNON.Vec3(this.model.position.x, this.model.position.y - 6, this.model.position.z),
+            position: new CANNON.Vec3(this.model.position.x, this.model.position.y + 10, this.model.position.z),
             shape: threeToCannon(boundingBox as any, { type: ShapeType.BOX })?.shape as any
         });
         this.body = body;

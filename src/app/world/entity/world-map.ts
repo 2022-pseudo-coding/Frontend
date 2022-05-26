@@ -71,6 +71,7 @@ export class WorldMap {
                 objLoader.load(url.model, object => {
                     this.model = object;
                     this.preprocess(0.04, [0, 0, 243], 0);
+                    this.addPhysics();
                     resolve(true);
                 });
             });
@@ -78,7 +79,7 @@ export class WorldMap {
         });
     }
 
-    setMatrix(model: THREE.Object3D, scale: number, position: number[], rotationY: number){
+    setMatrix(model: THREE.Object3D, scale: number, position: number[], rotationY: number) {
         model.scale.set(scale, scale, scale);
         model.position.set(position[0], position[1], position[2]);
         model.rotation.y = rotationY;
@@ -97,26 +98,30 @@ export class WorldMap {
 
     addPhysics() {
         let wall = new THREE.Mesh(new THREE.BoxGeometry(5, 10, 5));
-        let plane = new THREE.Mesh(new THREE.PlaneGeometry(100, 100));
+
         const wallBody = new CANNON.Body({
             position: new CANNON.Vec3(0, 10, 0),
-            allowSleep:true,
+            allowSleep: true,
             mass: 0,
             shape: threeToCannon(wall as any, { type: ShapeType.BOX })?.shape as any
         });
-        const groundMat = new CANNON.Material('ground')
-        groundMat.friction = 0.3;
-        const planeBody = new CANNON.Body({
-            position: new CANNON.Vec3(0, 0, 0),
-            allowSleep:true,
-            mass: 0,
-            material: groundMat, 
-            shape: threeToCannon(plane as any, { type: ShapeType.BOX })?.shape as any
-        });
-        planeBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0), Math.PI / 2);
+
+        let heights: any = [];
+        for (let i = 0; i < 100; i++) {
+            heights.push([]);
+            for (let j = 0; j < 100; j++) {
+                heights[i].push(0.1);
+            }
+        }
+        const heightField = new CANNON.Heightfield(heights, { elementSize: 1 });
+        const heightFieldBody = new CANNON.Body({ mass: 0, allowSleep:true });
+        heightFieldBody.addShape(heightField);
+        heightFieldBody.sleep();
+        heightFieldBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0), Math.PI / 2);
+        heightFieldBody.position.set(-50,0,-50);
         wallBody.sleep();
         this.world.addBody(wallBody);
-        this.world.addBody(planeBody);
+        this.world.addBody(heightFieldBody);
     }
 
     dispose(): void {

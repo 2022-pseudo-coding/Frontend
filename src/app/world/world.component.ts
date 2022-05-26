@@ -21,6 +21,12 @@ export class WorldComponent implements OnInit {
   ngOnInit(): void {
     //todo
     // this.redirect();
+    this.debug();
+  }
+
+  debug(): void{
+    localStorage.setItem('username', 'mike');
+    localStorage.setItem('modelName', 'blueBot');
   }
 
   redirect(): void {
