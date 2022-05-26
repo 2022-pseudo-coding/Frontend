@@ -1,4 +1,4 @@
-import { AfterViewInit, Directive, forwardRef } from '@angular/core';
+import { AfterViewInit, Directive, forwardRef, Input } from '@angular/core';
 import * as THREE from 'three';
 import { AbstractObjectDirective } from '../basics/abstract-object.directive';
 
@@ -8,12 +8,14 @@ import { AbstractObjectDirective } from '../basics/abstract-object.directive';
 })
 export class FloorDirective extends AbstractObjectDirective<THREE.Mesh> implements AfterViewInit {
 
+  @Input() color!: string;
+
   constructor() { super(); }
 
   override ngAfterViewInit(): void {
 
     let material = new THREE.MeshLambertMaterial({
-      color: 0x00ebc0
+      color: Number(this.color)
     });
 
     this.object = new THREE.Mesh(

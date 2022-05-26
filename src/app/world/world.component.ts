@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { catchError, EMPTY } from 'rxjs';
 import { DataService } from '../services/data.service';
@@ -13,15 +13,19 @@ import { MatDialog } from '@angular/material/dialog';
 })
 export class WorldComponent implements OnInit {
   loaded: boolean = false;
+  mapId!: string;
 
   constructor(private router: Router,
     private authService: AuthService,
-    private dataService: DataService) { }
+    private dataService: DataService,
+    private route:ActivatedRoute) { }
 
   ngOnInit(): void {
     //todo
     // this.redirect();
     this.debug();
+    let temp = this.route.snapshot.routeConfig?.path;
+    this.mapId = temp ? temp : 'camp';
   }
 
   debug(): void{

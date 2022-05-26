@@ -16,7 +16,7 @@ import CannonDebugger from 'cannon-es-debugger';
   selector: 'three-renderer-world',
   template: '<canvas #canvas></canvas>'
 })
-export class RendererWorldComponent implements AfterViewInit, OnDestroy, OnInit {
+export class RendererWorldComponent implements AfterViewInit, OnDestroy {
   width!: number;
   height!: number;
 
@@ -25,6 +25,8 @@ export class RendererWorldComponent implements AfterViewInit, OnDestroy, OnInit 
 
   @ContentChild(SceneDirective) scene!: SceneDirective
   @Output() loadedEmitter = new EventEmitter<boolean>();
+
+  @Input() mapId!: string;
 
   renderer!: THREE.WebGLRenderer;
   camera!: THREE.PerspectiveCamera;
@@ -35,16 +37,11 @@ export class RendererWorldComponent implements AfterViewInit, OnDestroy, OnInit 
   otherPlayers: { [key: string]: OtherPlayer } = {};
 
   worldMap!: WorldMap;
-  mapId!: string;
+  
 
   constructor(private playerService: PlayerService, private route: ActivatedRoute) {
     this.width = window.innerWidth;
     this.height = window.innerHeight;
-  }
-
-  ngOnInit(): void {
-    let temp = this.route.snapshot.routeConfig?.path;
-    this.mapId = temp ? temp : 'camp';
   }
 
   ngAfterViewInit() {
