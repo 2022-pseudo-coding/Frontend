@@ -3,6 +3,9 @@ import { SceneDirective } from '../basics/scene.directive';
 import * as THREE from 'three';
 import CameraControls from 'camera-controls';
 import DragControls from 'drag-controls';
+import { Object3D } from 'three';
+import { InstructionDirective } from '../mesh/instruction.directive';
+import { ProblemService } from './problem.service';
 
 CameraControls.install({THREE});
 DragControls.install({THREE});
@@ -22,19 +25,21 @@ export class RendererProblemComponent implements AfterViewInit {
   @ContentChild(SceneDirective) scene!: SceneDirective
 
   renderer!: THREE.WebGLRenderer;
-  camera!: THREE.PerspectiveCamera;
+  camera!: THREE.OrthographicCamera;
   cameraControls!: CameraControls;
   dragControls!: DragControls;
+  dragableObj!:Array<Object3D>;
 
-  constructor() {
+  constructor(public problemEventService:ProblemService) {
     if (this.mode === 'fullscreen') {
-      this.width = window.innerWidth;
+      this.width = window.innerWidth*0.4;
       this.height = window.innerHeight;
     } else if (this.mode === 'xxxx') {
       //TODO
-      this.width = 300;
+      this.width = 200;
       this.height = 200;
     }
+    
   }
 
   ngAfterViewInit() {
@@ -46,17 +51,23 @@ export class RendererProblemComponent implements AfterViewInit {
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-    this.camera = new THREE.PerspectiveCamera(75, this.width / this.height, 0.1, 100);
-    this.camera.position.set(0, 18, 18);
+    this.camera = new THREE.OrthographicCamera(this.width / - 20, this.width / 20, this.height / 20, this.height / - 20, 1, 100);
+    this.camera.position.set(0, 18, 0);
     this.camera.lookAt(0, 0, 0);
 
     this.adjustAspect();
     this.initWindowEvt();
 
     /* init controls */
+    this.dragableObj = new Array<Object3D>();
+    for(var i = 1 ; i < this.scene.meshes.length ; i++)
+    {
+      this.dragableObj.push(this.scene.meshes[i]);
+    }
     this.cameraControls = new CameraControls(this.camera, this.renderer.domElement);
-    this.dragControls = new DragControls(this.scene.meshes, this.camera, this.canvas);
-    (this.dragControls as any).enabled = false;
+    this.dragControls = new DragControls(this.dragableObj, this.camera, this.canvas);
+    (this.dragControls as any).enabled = true;
+    this.cameraControls.enabled = false;
 
     //animation loop
     const clock = new THREE.Clock();
@@ -77,7 +88,6 @@ export class RendererProblemComponent implements AfterViewInit {
 
   adjustAspect(): void {
     this.renderer.setSize(this.width, this.height);
-    this.camera.aspect = this.width / this.height;
     this.camera.updateProjectionMatrix();
   }
 
@@ -89,20 +99,51 @@ export class RendererProblemComponent implements AfterViewInit {
 
       } else if (this.mode === 'xxxx') {
         //TODO
-        this.width = 123;
-        this.height = 123;
+        this.width = 200;
+        this.height = 200;
       }
 
       this.adjustAspect();
     });
+
+    this.problemEventService.problemEventEmitter.subscribe((value:any)=>{
+      if(value.ins=="add")
+      {
+        console.log(value.message);
+        this.addIns();
+      }
+    });
     // press f to drag
-    window.addEventListener('keydown', e=>{
-      this.cameraControls.enabled = false;
-      (this.dragControls as any).enabled = true;
+    // window.addEventListener('keydown', e=>{
+    //   this.cameraControls.enabled = false;
+    //   (this.dragControls as any).enabled = true;
+    // });
+    // window.addEventListener('keyup', e=>{
+    //   this.cameraControls.enabled = true;
+    //   (this.dragControls as any).enabled = false;
+    // });
+  }
+
+  addIns(): void {
+    const loader = new THREE.TextureLoader();
+
+    let tex = loader.load('../../../assets/icons/problem/default.jpg');
+    let material = new THREE.MeshBasicMaterial({
+      map: tex
     });
-    window.addEventListener('keyup', e=>{
-      this.cameraControls.enabled = true;
-      (this.dragControls as any).enabled = false;
-    });
+
+    material.map!.repeat.x = material.map!.repeat.y = 1;
+
+    let object = new THREE.Mesh(
+      new THREE.PlaneBufferGeometry(20, 10, 30, 30),
+      material
+    );
+    object.receiveShadow = true;
+    object.rotation.x = - Math.PI / 2;
+    
+    this.scene.add( object );
+    this.dragableObj.push(object);
+    object.position.set(0,11,0);
+
   }
 }

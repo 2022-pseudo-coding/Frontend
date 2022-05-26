@@ -1,9 +1,58 @@
 <div id="wrapper">
+  <div class="problem_left">
+    <mat-card class="problem_card">
+      <mat-card class="problem_detail">
+        <mat-card-title>here is problem title</mat-card-title>
+        <mat-card-subtitle>here is problem description <br> balabalabala</mat-card-subtitle>
+      </mat-card>
+      <div class="ins_list">
+        <button mat-raised-button color="primary" (click)="addIns();">Sample</button>
+      </div>
+    </mat-card>
+  </div>
+  <div class="problem_mid">
     <three-renderer-problem>
-        <three-scene>
-            <three-light mode="hemi" [position]="[0, 50, 0]"></three-light>
-            <three-light mode="dir" [position]="[-1, 2, 1]"></three-light>
-            <three-mesh-ball [position]="[0,10,0]"></three-mesh-ball>
-        </three-scene>
+      <three-scene>
+        <three-light mode="hemi" [position]="[0, 50, 0]"></three-light>
+        <three-light mode="dir" [position]="[-1, 2, 1]"></three-light>
+        <three-ground [position]="[0, 0, 0]"></three-ground>
+        <three-instruction *ngFor="let x of ins" [position]="[x,11,0]" [ins_type]="1"></three-instruction>
+      </three-scene>
     </three-renderer-problem>
+  </div>
+  <div class="problem_right">
+    <div class="inbox">
+      <p class="box_title"> input </p>
+      <div class="box_item_list">
+        <div class="box_item" *ngFor="let item of inputList">
+          {{item}}
+        </div>
+      </div>
+    </div>
+    <div class="storage">
+      <div class="storage_part" *ngFor="let item of storageList let i = index">
+        <p class="storage_part_value">{{item}}</p>
+        <p class="storage_part_index">{{i}}<p>
+      </div>
+    </div>
+    <div class="outbox">
+      <div class="outbox_part">
+        <p class="box_title"> output </p>
+        <div class="box_item_list">
+          <div class="box_item" *ngFor="let item of outputList">
+            {{item}}
+          </div>
+        </div>
+      </div>
+      <div class="outbox_part">
+        <p class="box_title"> expected output </p>
+        <div class="box_item_list">
+          <div class="box_item" *ngFor="let item of expectedOutputList">
+            {{item}}
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
 </div>

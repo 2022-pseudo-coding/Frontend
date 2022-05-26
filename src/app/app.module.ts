@@ -29,6 +29,8 @@ import { GroundDirective } from './world/mesh/ground.directive';
 import { SocketIoConfig, SocketIoModule } from 'ngx-socket-io';
 import { environment } from 'src/environments/environment';
 import { PlayerService } from './services/player.service';
+import { InstructionDirective } from './world/mesh/instruction.directive';
+import { ProblemService } from './services/problem.service';
 
 const config: SocketIoConfig = { url: environment.SOCKET_URL, options: {autoConnect: false} };
 
@@ -49,6 +51,7 @@ const config: SocketIoConfig = { url: environment.SOCKET_URL, options: {autoConn
     LightDirective,
     BallDirective,
     GroundDirective,
+    InstructionDirective,
   ],
   imports: [
     BrowserModule,
@@ -65,7 +68,7 @@ const config: SocketIoConfig = { url: environment.SOCKET_URL, options: {autoConn
     provide: HTTP_INTERCEPTORS,
     useClass: AuthInterceptor,
     multi: true
-  }, DataService, PlayerService
+  }, DataService, PlayerService ,ProblemService
   ],
   bootstrap: [AppComponent]
 })
