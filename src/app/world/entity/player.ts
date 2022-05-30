@@ -45,7 +45,8 @@ export class Player extends AbstractPlayer {
             to?.reset().fadeIn(0.2).play();
             this.activeAction = currentAction;
         }
-        this.mixer.update(delta);
+        //get position for debugging
+        // this.mixer.update(delta);
 
         this.model.position.x = this.body.position.x;
         this.model.position.y = this.body.position.y - 6;
@@ -53,6 +54,8 @@ export class Player extends AbstractPlayer {
 
         this.velocity.x = 0;
         this.velocity.z = 0;
+
+        console.log(this.position.x, this.position.y, this.position.z);
 
         if (this.activeAction === 'walk') {
             let dir = this.directionOffset();
@@ -69,10 +72,10 @@ export class Player extends AbstractPlayer {
 
             let vX = -this.walkDir.x * 40;
             let vZ = -this.walkDir.z * 40;
-            if(Math.abs(this.velocity.x) < 40 || (vX * this.velocity.x < 0)){
+            if (Math.abs(this.velocity.x) < 40 || (vX * this.velocity.x < 0)) {
                 this.velocity.x += vX;
             }
-            if(Math.abs(this.velocity.z) < 40 || (vZ * this.velocity.z < 0)){
+            if (Math.abs(this.velocity.z) < 40 || (vZ * this.velocity.z < 0)) {
                 this.velocity.z += vZ;
             }
 
@@ -117,7 +120,7 @@ export class Player extends AbstractPlayer {
         return this.model.position;
     }
 
-    get velocity(): CANNON.Vec3{
+    get velocity(): CANNON.Vec3 {
         return this.body.velocity;
     }
 

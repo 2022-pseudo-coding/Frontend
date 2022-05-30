@@ -9,7 +9,7 @@ import * as THREE from 'three';
 export class LightDirective extends AbstractObjectDirective<THREE.Light> implements AfterViewInit {
 
   @Input() mode!: string;
-
+  @Input() color!: string;
   constructor() { super(); }
 
   override ngAfterViewInit(): void {
@@ -36,7 +36,12 @@ export class LightDirective extends AbstractObjectDirective<THREE.Light> impleme
         light.shadow.bias = - 0.0001;
         break;
       case 'ambient':
-        light = new THREE.AmbientLight(0xffffff, 0.8);
+        // light = new THREE.AmbientLight(0xffffff, 0.8);
+        light = new THREE.AmbientLight(0xffffff, 1.0);
+        break;
+      case 'point':
+        light = new THREE.PointLight(0xffffff, 2.0);
+        light.color.setHex(Number(this.color));
         break;
     }
     this.object = light as THREE.Light;
