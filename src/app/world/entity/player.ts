@@ -46,7 +46,7 @@ export class Player extends AbstractPlayer {
             this.activeAction = currentAction;
         }
         //get position for debugging
-        // this.mixer.update(delta);
+        this.mixer.update(delta);
 
         this.model.position.x = this.body.position.x;
         this.model.position.y = this.body.position.y - 6;
@@ -55,7 +55,7 @@ export class Player extends AbstractPlayer {
         this.velocity.x = 0;
         this.velocity.z = 0;
 
-        console.log(this.position.x, this.position.y, this.position.z);
+        // console.log(this.position.x, this.position.y, this.position.z);
 
         if (this.activeAction === 'walk') {
             let dir = this.directionOffset();
