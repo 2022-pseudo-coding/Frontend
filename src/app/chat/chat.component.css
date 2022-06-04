@@ -1,0 +1,26 @@
+.chat-wrapper {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 15%;
+    height: 100%;
+    background-color: yellow;
+    z-index: 100;
+}
+
+.example-container {
+    width: 500px;
+    height: 300px;
+    border: 1px solid rgba(0, 0, 0, 0.5);
+}
+
+.example-sidenav-content {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+.example-sidenav {
+    padding: 20px;
+}

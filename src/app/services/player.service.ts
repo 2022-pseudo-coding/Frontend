@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Socket } from 'ngx-socket-io';
-import { environment } from 'src/environments/environment';
-import { DataService } from './data.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,13 +7,13 @@ import { DataService } from './data.service';
 export class PlayerService {
 
   constructor(private socket: Socket) {
-
   }
 
-  connect(){
+  connect(room: string) {
     this.socket.ioSocket.io.opts.query = {
       modelName: localStorage.getItem('modelName'),
-      username: localStorage.getItem('username')
+      username: localStorage.getItem('username'),
+      room: room
     };
     this.socket.connect();
   }
@@ -28,6 +26,10 @@ export class PlayerService {
       position: [position.x, position.y, position.z]
     }
     this.socket.emit('clientFrame', result);
+  }
+
+  mySpeak(message: string) {
+    this.socket.emit('speak', { message });
   }
 
   disconnect() {
@@ -48,5 +50,9 @@ export class PlayerService {
 
   onOthersMove() {
     return this.socket.fromEvent('serverFrame');
+  }
+
+  onOthersSpeak() {
+    return this.socket.fromEvent('speak');
   }
 }

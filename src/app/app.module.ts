@@ -30,6 +30,8 @@ import { FloorDirective } from './world/mesh/floor.directive';
 import { SocketIoConfig, SocketIoModule } from 'ngx-socket-io';
 import { environment } from 'src/environments/environment';
 import { PlayerService } from './services/player.service';
+import { UserCenterComponent } from './user-center/user-center.component';
+import { ChatComponent } from './chat/chat.component';
 
 const config: SocketIoConfig = { url: environment.SOCKET_URL, options: {autoConnect: false} };
 
@@ -51,6 +53,8 @@ const config: SocketIoConfig = { url: environment.SOCKET_URL, options: {autoConn
     BallDirective,
     GroundDirective,
     FloorDirective,
+    UserCenterComponent,
+    ChatComponent,
   ],
   imports: [
     BrowserModule,

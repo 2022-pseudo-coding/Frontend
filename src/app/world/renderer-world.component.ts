@@ -33,6 +33,7 @@ export class RendererWorldComponent implements AfterViewInit, OnDestroy {
   world!: CANNON.World;
 
   myPlayer!: Player;
+  myPlayerId!: any;
   keyPressed: Map<string, boolean> = new Map();
   otherPlayers: { [key: string]: OtherPlayer } = {};
 
@@ -45,9 +46,9 @@ export class RendererWorldComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true });
+    this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: false });
 
-    this.renderer.setPixelRatio(window.devicePixelRatio);
+    this.renderer.setPixelRatio(window.devicePixelRatio * 0.9);
     this.renderer.physicallyCorrectLights = true;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.shadowMap.enabled = true;
@@ -111,7 +112,7 @@ export class RendererWorldComponent implements AfterViewInit, OnDestroy {
         this.myPlayer.addPhysics();
         renderLoop();
         this.loadedEmitter.emit(true);
-        this.playerService.connect();
+        this.playerService.connect(this.mapId);
         this.initSocket();
       });
     });
@@ -141,6 +142,7 @@ export class RendererWorldComponent implements AfterViewInit, OnDestroy {
 
   initSocket(): void {
     this.playerService.onMyJoin().subscribe((resp: any) => {
+      this.myPlayerId = resp.id;
       for (let one of resp.others) {
         const player = new OtherPlayer(this.scene, one.username);
         player.load(one.modelName).then(() => {
@@ -155,7 +157,6 @@ export class RendererWorldComponent implements AfterViewInit, OnDestroy {
           this.otherPlayers[one.id] = player;
         })
       }
-
     });
     this.playerService.onOthersQuit().subscribe((id: any) => {
       this.otherPlayers[id].dispose();

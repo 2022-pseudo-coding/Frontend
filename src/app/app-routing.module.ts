@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { RegisterComponent } from './register/register.component';
+import { UserCenterComponent } from './user-center/user-center.component';
 import { ProblemComponent } from './world/problem/problem.component';
 import { WorldComponent } from './world/world.component';
 
@@ -17,6 +18,7 @@ const routes: Routes = [
   },
   { path: '', redirectTo: '/world/camp', pathMatch: 'full' },
   { path: 'problem', component: ProblemComponent },
+  { path: 'center', component: UserCenterComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: '**', component: PageNotFoundComponent }
