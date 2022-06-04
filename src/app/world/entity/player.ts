@@ -19,6 +19,10 @@ export class Player extends AbstractPlayer {
     world: CANNON.World;
     body!: CANNON.Body;
     cameraBody!: CANNON.Body;
+    rayResult: CANNON.RaycastResult = new CANNON.RaycastResult();
+    slopeVelocity: THREE.Vector3 = new THREE.Vector3(0, 0, 0);
+
+    inProblem: boolean = false;
 
 
     constructor(sceneDirective: SceneDirective,
@@ -49,13 +53,14 @@ export class Player extends AbstractPlayer {
         this.mixer.update(delta);
 
         this.model.position.x = this.body.position.x;
-        this.model.position.y = this.body.position.y - 6;
+        this.model.position.y = this.body.position.y - 7;
         this.model.position.z = this.body.position.z;
 
+        this.raycast();
         this.velocity.x = 0;
         this.velocity.z = 0;
 
-        // console.log(this.position.x, this.position.y, this.position.z);
+        // console.log(this.bodyPosition);
 
         if (this.activeAction === 'walk') {
             let dir = this.directionOffset();
@@ -70,12 +75,12 @@ export class Player extends AbstractPlayer {
             this.walkDir.normalize();
             this.walkDir.applyAxisAngle(this.rotateA, dir);
 
-            let vX = -this.walkDir.x * 40;
-            let vZ = -this.walkDir.z * 40;
-            if (Math.abs(this.velocity.x) < 40 || (vX * this.velocity.x < 0)) {
+            let vX = -this.walkDir.x * 50;
+            let vZ = -this.walkDir.z * 50;
+            if (Math.abs(this.velocity.x) < 50 || (vX * this.velocity.x < 0)) {
                 this.velocity.x += vX;
             }
-            if (Math.abs(this.velocity.z) < 40 || (vZ * this.velocity.z < 0)) {
+            if (Math.abs(this.velocity.z) < 50 || (vZ * this.velocity.z < 0)) {
                 this.velocity.z += vZ;
             }
 
@@ -116,7 +121,11 @@ export class Player extends AbstractPlayer {
         return this.model.quaternion;
     }
 
-    get position(): THREE.Vector3 {
+    get bodyPosition(): CANNON.Vec3 {
+        return this.body.position;
+    }
+
+    get modelPosition(): THREE.Vector3 {
         return this.model.position;
     }
 
@@ -126,14 +135,36 @@ export class Player extends AbstractPlayer {
 
     addPhysics() {
         let boundingBox: THREE.Mesh = new THREE.Mesh(new THREE.BoxGeometry(3.5, 14, 3.5));
+        let material: CANNON.Material = new CANNON.Material("player");
+        material.friction = 0.3;
         let body = new CANNON.Body({
-            mass: 10,
+            material: material,
+            mass: 5,
             allowSleep: false,
             fixedRotation: true,
+            collisionFilterGroup: 2,
+            collisionFilterMask: 1,
             position: new CANNON.Vec3(this.model.position.x, this.model.position.y + 10, this.model.position.z),
             shape: threeToCannon(boundingBox as any, { type: ShapeType.BOX })?.shape as any
         });
+
         this.body = body;
         this.world.addBody(body);
+    }
+
+    raycast() {
+        const start = new CANNON.Vec3(this.bodyPosition.x, this.bodyPosition.y, this.bodyPosition.z);
+        const end = new CANNON.Vec3(this.bodyPosition.x + 10, this.bodyPosition.y, this.bodyPosition.z + 10);
+        // Cast the ray
+        let rayHasHit = (this.world as any).raycastClosest(start, end, {
+            collisionFilterMask: ~2
+        }, this.rayResult);
+
+        let problemId = (this.rayResult.body as any)?.name;
+        if (rayHasHit && problemId && !this.inProblem) {
+            // todo
+            // enter the problem page
+            // set inProblem to be true
+        }
     }
 }

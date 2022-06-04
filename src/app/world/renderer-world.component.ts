@@ -63,10 +63,11 @@ export class RendererWorldComponent implements AfterViewInit, OnDestroy {
 
     const orbitControls = new ORBIT.OrbitControls(this.camera, this.renderer.domElement);
     orbitControls.enableDamping = true;
-    orbitControls.minDistance = 5;
+    orbitControls.minDistance = 10;
     orbitControls.maxDistance = 20;
     orbitControls.enablePan = false;
     orbitControls.maxPolarAngle = Math.PI / 2 - 0.05;
+    orbitControls.minPolarAngle = 0.05;
 
     orbitControls.target = new Vector3(0, 10, 0);
     orbitControls.update();
@@ -91,7 +92,7 @@ export class RendererWorldComponent implements AfterViewInit, OnDestroy {
 
       orbitControls.update();
 
-      this.playerService.myMove(this.myPlayer.quaternion, this.myPlayer.walkDir, this.myPlayer.activeAction, this.myPlayer.position);
+      this.playerService.myMove(this.myPlayer.quaternion, this.myPlayer.walkDir, this.myPlayer.activeAction, this.myPlayer.modelPosition);
 
       Object.keys(this.otherPlayers).forEach(key => {
         this.otherPlayers[key].update(delta);

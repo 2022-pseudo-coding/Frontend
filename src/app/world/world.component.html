@@ -11,7 +11,7 @@
             <three-light mode="hemi" [position]="[0, 50, 0]"></three-light>
             <three-light mode="dir" [position]="[-1, 2, 1]"></three-light>
             <three-light mode="ambient" [position]="[0, 0, 0]"></three-light>
-            <three-floor [position]="[0, -70, 0]"></three-floor>
+            <three-floor [position]="[0, -70, 0]" [color]="'0x00ebc0'"></three-floor>
         </three-scene>
         <three-scene *ngIf="mapId === 'forest'">
             <three-light mode="hemi" [position]="[0, 50, 0]"></three-light>
@@ -24,7 +24,7 @@
             <three-light mode ="point" [position]="[23,-12,280]" [color]="'0xffff33'"></three-light>
             <three-light mode ="point" [position]="[-109,-12,164]" [color]="'0xffffff'"></three-light>
             <three-light mode ="point" [position]="[170,-12,237]" [color]="'0xffffff'"></three-light>
-            <three-floor [position]="[0, -70, 0]"></three-floor>
+            <three-floor [position]="[0, -70, 0]" [color]="'0x00ebc0'"></three-floor>
         </three-scene>
     </three-renderer-world>
 </div>
