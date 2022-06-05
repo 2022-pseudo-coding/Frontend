@@ -1,5 +1,5 @@
 <mat-spinner mode="indeterminate" *ngIf="!loaded"></mat-spinner>
-<app-chat ></app-chat>
+<app-chat [mapId]="mapId"></app-chat>
 <div id="wrapper">
     <three-renderer-world (loadedEmitter)="setLoaded($event)" [mapId]="mapId">
         <three-scene *ngIf="mapId === 'camp'">
