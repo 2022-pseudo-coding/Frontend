@@ -16,7 +16,7 @@ import CannonDebugger from 'cannon-es-debugger';
   selector: 'three-renderer-world',
   template: '<canvas #canvas></canvas>'
 })
-export class RendererWorldComponent implements AfterViewInit, OnDestroy, OnInit {
+export class RendererWorldComponent implements AfterViewInit, OnDestroy {
   width!: number;
   height!: number;
 
@@ -26,31 +26,29 @@ export class RendererWorldComponent implements AfterViewInit, OnDestroy, OnInit 
   @ContentChild(SceneDirective) scene!: SceneDirective
   @Output() loadedEmitter = new EventEmitter<boolean>();
 
+  @Input() mapId!: string;
+
   renderer!: THREE.WebGLRenderer;
   camera!: THREE.PerspectiveCamera;
   world!: CANNON.World;
 
   myPlayer!: Player;
+  myPlayerId!: any;
   keyPressed: Map<string, boolean> = new Map();
   otherPlayers: { [key: string]: OtherPlayer } = {};
 
   worldMap!: WorldMap;
-  mapId!: string;
+  
 
   constructor(private playerService: PlayerService, private route: ActivatedRoute) {
     this.width = window.innerWidth;
     this.height = window.innerHeight;
   }
 
-  ngOnInit(): void {
-    let temp = this.route.snapshot.routeConfig?.path;
-    this.mapId = temp ? temp: 'camp';
-  }
-
   ngAfterViewInit() {
-    this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true });
+    this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: false });
 
-    this.renderer.setPixelRatio(window.devicePixelRatio);
+    this.renderer.setPixelRatio(window.devicePixelRatio * 0.9);
     this.renderer.physicallyCorrectLights = true;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.shadowMap.enabled = true;
@@ -66,10 +64,11 @@ export class RendererWorldComponent implements AfterViewInit, OnDestroy, OnInit 
 
     const orbitControls = new ORBIT.OrbitControls(this.camera, this.renderer.domElement);
     orbitControls.enableDamping = true;
-    orbitControls.minDistance = 5;
+    orbitControls.minDistance = 10;
     orbitControls.maxDistance = 20;
     orbitControls.enablePan = false;
     orbitControls.maxPolarAngle = Math.PI / 2 - 0.05;
+    orbitControls.minPolarAngle = 0.05;
 
     orbitControls.target = new Vector3(0, 10, 0);
     orbitControls.update();
@@ -89,18 +88,17 @@ export class RendererWorldComponent implements AfterViewInit, OnDestroy, OnInit 
       const delta = clock.getDelta();
 
       this.renderPhysics();
-      
+
       this.myPlayer.update(delta);
-      
+
       orbitControls.update();
 
-      this.playerService.myMove(this.myPlayer.quaternion, this.myPlayer.walkDir, this.myPlayer.activeAction, this.myPlayer.position);
+      this.playerService.myMove(this.myPlayer.quaternion, this.myPlayer.walkDir, this.myPlayer.activeAction, this.myPlayer.modelPosition);
 
       Object.keys(this.otherPlayers).forEach(key => {
         this.otherPlayers[key].update(delta);
       });
 
-      
       debug.update();
 
       this.renderer.render(this.scene.object, this.camera);
@@ -108,13 +106,15 @@ export class RendererWorldComponent implements AfterViewInit, OnDestroy, OnInit 
       animationId = requestAnimationFrame(renderLoop);
     };
 
-    this.worldMap.load().then(() => { });
+
     this.myPlayer.load(localStorage.getItem('modelName')!).then(() => {
-      this.myPlayer.addPhysics();
-      renderLoop();
-      this.loadedEmitter.emit(true);
-      this.playerService.connect();
-      this.initSocket();
+      this.worldMap.load().then(() => {
+        this.myPlayer.addPhysics();
+        renderLoop();
+        this.loadedEmitter.emit(true);
+        this.playerService.connect(this.mapId);
+        this.initSocket();
+      });
     });
   }
 
@@ -142,6 +142,7 @@ export class RendererWorldComponent implements AfterViewInit, OnDestroy, OnInit 
 
   initSocket(): void {
     this.playerService.onMyJoin().subscribe((resp: any) => {
+      this.myPlayerId = resp.id;
       for (let one of resp.others) {
         const player = new OtherPlayer(this.scene, one.username);
         player.load(one.modelName).then(() => {
@@ -156,7 +157,6 @@ export class RendererWorldComponent implements AfterViewInit, OnDestroy, OnInit 
           this.otherPlayers[one.id] = player;
         })
       }
-
     });
     this.playerService.onOthersQuit().subscribe((id: any) => {
       this.otherPlayers[id].dispose();
@@ -184,7 +184,7 @@ export class RendererWorldComponent implements AfterViewInit, OnDestroy, OnInit 
   }
 
   renderPhysics(): void {
-    this.world.step(1/60);
+    this.world.step(1 / 60);
   }
 
   ngOnDestroy(): void {

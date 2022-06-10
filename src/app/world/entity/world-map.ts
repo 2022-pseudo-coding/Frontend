@@ -10,9 +10,11 @@ import * as CANNON from 'cannon';
 export class WorldMap {
     mixer!: THREE.AnimationMixer;
     sceneDirective: SceneDirective;
-    model!: THREE.Group;
+    mapModel!: THREE.Group;
+    portalModel!: THREE.Group;
     mapId: string;
-    baseUrl: string = '../../../assets/model/map/';
+    mapUrl: string = '../../../assets/model/map/';
+    portalUrl: string = '../../../assets/model/portal/'
     world: CANNON.World;
 
     constructor(sceneDirective: SceneDirective, mapId: string, world: CANNON.World) {
@@ -36,11 +38,31 @@ export class WorldMap {
     loadCamp(): Promise<boolean> {
         const gltfLoader = new GLTFLoader();
         return new Promise((resolve) => {
-            gltfLoader.setPath(this.baseUrl + 'camp/').load('scene.gltf', gltf => {
-                this.model = gltf.scene;
-                this.preprocess(13, [5, 0, -130], -Math.PI * 3 / 8);
-                this.addPhysics();
-                resolve(true);
+            gltfLoader.setPath(this.mapUrl + 'camp/').load('scene.gltf', gltf => {
+                this.mapModel = gltf.scene;
+                this.preprocess(this.mapModel, {
+                    scale: 13,
+                    position: [5, 0, -130],
+                    rotationY: -Math.PI * 3 / 8
+                });
+                this.addPhysicsCamp();
+                gltfLoader.setPath(this.portalUrl + 'camp/').load('scene.gltf', gltf => {
+                    this.portalModel = gltf.scene;
+                    let infos: any[] = [{ pos: [-2, 7, -87], rotationY: 0 },
+                    { pos: [3.7, 6, -120.7], rotationY: 0 },
+                    { pos: [-70, 7, -181.3], rotationY: 0 },
+                    { pos: [31, 7, -172], rotationY: -Math.PI / 3 },
+                    { pos: [101, 7, -145.6], rotationY: Math.PI / 2 }];
+                    infos.forEach((info, id) => {
+                        this.addPortalBoxToWorld("1-" + id, info.pos);
+                        this.preprocess(this.portalModel.clone(), {
+                            scale: 3,
+                            position: info.pos,
+                            rotationY: info.rotationY
+                        });
+                    })
+                    resolve(true);
+                })
             });
         })
     }
@@ -48,80 +70,300 @@ export class WorldMap {
     loadIsland(): Promise<boolean> {
         const gltfLoader = new GLTFLoader();
         return new Promise((resolve) => {
-            gltfLoader.setPath(this.baseUrl + 'island/').load('scene.gltf', gltf => {
-                this.model = gltf.scene;
-                this.preprocess(3.5, [0, -30, -250], -Math.PI);
-                this.addPhysics();
-                resolve(true);
+            gltfLoader.setPath(this.mapUrl + 'island/').load('scene.gltf', gltf => {
+                this.mapModel = gltf.scene;
+                this.preprocess(this.mapModel, {
+                    scale: 0.3,
+                    position: [-50, 140, -460],
+                    rotationY: 0
+                });
+                this.addPhysicsIsland();
+                gltfLoader.setPath(this.portalUrl + 'island/').load('scene.gltf', gltf => {
+                    this.portalModel = gltf.scene;
+                    let infos: any[] = [{ pos: [12.8, 3, -459], rotationY: 0 },
+                    { pos: [-80, 3, -508], rotationY: 0 },
+                    { pos: [32.5, 3, -565], rotationY: 0 },
+                    { pos: [117.4, 3, -460.3], rotationY: -Math.PI / 3 },
+                    { pos: [145.2, 3, -533], rotationY: Math.PI / 2 }];
+                    infos.forEach((info, id) => {
+                        this.addPortalBoxToWorld("2-" + id, info.pos);
+                        this.preprocess(this.portalModel.clone(), {
+                            scale: 1,
+                            position: info.pos,
+                            rotationY: info.rotationY
+                        });
+                    })
+                    resolve(true);
+                })
             });
         })
     }
 
     loadForest(): Promise<boolean> {
         const objLoader = new OBJLoader();
+        const gltfLoader = new GLTFLoader();
         const mtlLoader = new MTLLoader();
         let url = {
-            model: this.baseUrl + 'lava/model.obj',
-            tex: this.baseUrl + 'lava/model.mtl'
+            model: this.mapUrl + 'lava/model.obj',
+            tex: this.mapUrl + 'lava/model.mtl'
         };
         return new Promise((resolve) => {
             mtlLoader.load(url.tex, mat => {
                 mat.preload();
                 objLoader.setMaterials(mat);
                 objLoader.load(url.model, object => {
-                    this.model = object;
-                    this.preprocess(0.04, [0, 0, 243], 0);
-                    resolve(true);
+                    this.mapModel = object;
+                    this.preprocess(this.mapModel, {
+                        scale: 0.04,
+                        position: [0, 5, 243],
+                        rotationY: 0
+                    });
+                    this.addPhysicsForest();
+                    gltfLoader.setPath(this.portalUrl + 'forest/').load('scene.gltf', gltf => {
+                        this.portalModel = gltf.scene;
+                        let infos: any[] = [{ pos: [-0.3, 0, -59.2], rotationY: 0 },
+                        { pos: [175, 3, 302], rotationY: Math.PI * 1.21 },
+                        { pos: [-142.6, 3, 238.5], rotationY: Math.PI / 2 },
+                        { pos: [0.04, 0, 369], rotationY: Math.PI }];
+                        infos.forEach((info, id) => {
+                            this.addPortalBoxToWorld("3-" + id, info.pos);
+                            this.preprocess(this.portalModel.clone(), {
+                                scale: 4,
+                                position: info.pos,
+                                rotationY: info.rotationY
+                            });
+                        })
+                        resolve(true);
+                    })
                 });
             });
 
         });
     }
 
-    setMatrix(model: THREE.Object3D, scale: number, position: number[], rotationY: number){
+    setMatrix(model: THREE.Object3D, scale: number, position: number[], rotationY: number) {
         model.scale.set(scale, scale, scale);
         model.position.set(position[0], position[1], position[2]);
         model.rotation.y = rotationY;
     }
 
-    preprocess(scale: number, position: number[], rotationY: number): void {
-        this.setMatrix(this.model, scale, position, rotationY);
-        this.model.traverse(node => {
+    preprocess(model: THREE.Group, config: any): void {
+        this.setMatrix(model, config.scale, config.position, config.rotationY);
+        model.traverse(node => {
             if ((node as THREE.Mesh).isMesh) {
                 node.castShadow = true;
                 ((node as THREE.Mesh).material as any).side = THREE.DoubleSide;
             }
         })
-        this.sceneDirective.add(this.model);
+        this.sceneDirective.add(model);
     }
 
-    addPhysics() {
-        let wall = new THREE.Mesh(new THREE.BoxGeometry(5, 10, 5));
-        let plane = new THREE.Mesh(new THREE.PlaneGeometry(100, 100));
-        const wallBody = new CANNON.Body({
-            position: new CANNON.Vec3(0, 10, 0),
-            allowSleep:true,
-            mass: 0,
-            shape: threeToCannon(wall as any, { type: ShapeType.BOX })?.shape as any
+    addPhysicsCamp() {
+        // ground
+        this.addBoxToWorld({
+            size: [350, 10, 330],
+            position: [0, -4, -130],
+            rotation: [0, 0, 0]
         });
-        const groundMat = new CANNON.Material('ground')
-        groundMat.friction = 0.3;
-        const planeBody = new CANNON.Body({
-            position: new CANNON.Vec3(0, 0, 0),
-            allowSleep:true,
-            mass: 0,
-            material: groundMat, 
-            shape: threeToCannon(plane as any, { type: ShapeType.BOX })?.shape as any
+        // trees
+        let treeCoordinates = [[56, -4, -82], [97, -4, -121.5], [65, -4, -171.5], [15.7, -4, -202.5],
+        [-105.4, -4, -79.5], [-64.7, -4, -118.7], [-97, -4, -168.5], [-85.7, -4, -217.4], [-9, -4, -250.3],
+        [62, -4, -232], [-42.6, -4, -191.8]];
+        for (let treeCoordinate of treeCoordinates) {
+            this.addBoxToWorld({
+                size: [10, 50, 10],
+                position: treeCoordinate,
+                rotation: [0, 0, 0]
+            });
+        }
+        // others
+        this.addBoxToWorld({
+            size: [20, 14, 20],
+            position: [-70.9, 0, -93.2],
+            rotation: [0, 0, 0]
         });
-        planeBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0), Math.PI / 2);
-        wallBody.sleep();
-        this.world.addBody(wallBody);
-        this.world.addBody(planeBody);
+        this.addBoxToWorld({
+            size: [70, 10, 10],
+            position: [-30, 0, -75.3],
+            rotation: [0, Math.PI * 0.7, 0]
+        });
+        this.addBoxToWorld({
+            size: [45, 7, 7],
+            position: [25, 0, -70.3],
+            rotation: [0, Math.PI * 1.25, 0]
+        });
+        this.addBoxToWorld({
+            size: [90, 10, 10],
+            position: [3.3, 3, -213.3],
+            rotation: [0, Math.PI * 0.9, 0]
+        });
+        this.addBoxToWorld({
+            size: [25, 25, 25],
+            position: [102.3, 3, -73.7],
+            rotation: [0, 0, 0]
+        });
+        // walls
+        this.addBoxToWorld({
+            size: [400, 50, 5],
+            position: [-1.6, 0, 30.7],
+            rotation: [0, 0, 0]
+        });
+        this.addBoxToWorld({
+            size: [400, 50, 5],
+            position: [0.5, 0, -291],
+            rotation: [0, 0, 0]
+        });
+        this.addBoxToWorld({
+            size: [400, 50, 5],
+            position: [-170, 0, -148],
+            rotation: [0, Math.PI / 2, 0]
+        });
+        this.addBoxToWorld({
+            size: [400, 50, 5],
+            position: [175, 0, -157],
+            rotation: [0, Math.PI / 2, 0]
+        });
+
+    }
+
+    addPhysicsIsland() {
+        // ground
+        this.addBoxToWorld({
+            size: [2000, 10, 2000],
+            position: [0, -4, -440],
+            rotation: [0, 0, 0]
+        });
+        // others
+        this.addBoxToWorld({
+            size: [30, 50, 30],
+            position: [-217, -4, -520],
+            rotation: [0, 0, 0]
+        });
+        // others
+        this.addBoxToWorld({
+            size: [230, 100, 200],
+            position: [-305, -4, -738],
+            rotation: [0, 0, 0]
+        });
+        this.addBoxToWorld({
+            size: [50, 100, 50],
+            position: [-73, -4, -818],
+            rotation: [0, 0, 0]
+        });
+        this.addBoxToWorld({
+            size: [200, 100, 70],
+            position: [218, -4, -782],
+            rotation: [0, 0, 0]
+        });
+        this.addBoxToWorld({
+            size: [70, 100, 70],
+            position: [286, -4, -728],
+            rotation: [0, 0, 0]
+        });
+        // walls
+        this.addBoxToWorld({
+            size: [2000, 50, 5],
+            position: [1000, 0, -440],
+            rotation: [0, Math.PI / 2, 0]
+        });
+        this.addBoxToWorld({
+            size: [2000, 50, 5],
+            position: [-1000, 0, -440],
+            rotation: [0, Math.PI / 2, 0]
+        });
+        this.addBoxToWorld({
+            size: [2000, 50, 5],
+            position: [0, 0, 560],
+            rotation: [0, 0, 0]
+        });
+        this.addBoxToWorld({
+            size: [2000, 50, 5],
+            position: [0, 0, -1440],
+            rotation: [0, 0, 0]
+        });
+    }
+
+    addPhysicsForest() {
+        this.addBoxToWorld({
+            size: [700, 10, 600],
+            position: [0, -4, 200],
+            rotation: [0, 0, 0]
+        });
+        // stones
+        let stoneCoordinates = [[60, 0, -67], [52, 0, -87], [27, 0, 182], [17, 0, 227.7],
+        [-66, 0, 249], [-57, 0, 236], [-29, 0, 255], [-12.6, 0, 246.3],
+        [7.5, 0, 264.3], [18.4, 0, 278.4], [47.8, 0, 267.8], [-30.7, 0, 238.5],
+        [33, 0, 274.3], [49.1, 0, 235.5], [78.2, 0, 248.5], [65.7, 0, 255.8],
+        [59, 0, 240], [56.5, 0, 268.5], [32.2, 0, 232.1], [40.3, 0, 219.4],
+        [91.5, 0, 251.3], [-88.4, 0, 321.6], [-8.2, 0, 272.4], [4.57, 0, 279]]
+        for (let stoneCoordinate of stoneCoordinates) {
+            this.addBoxToWorld({
+                size: [15, 20, 15],
+                position: stoneCoordinate,
+                rotation: [0, 0, 0]
+            });
+        }
+        // walls
+        this.addBoxToWorld({
+            size: [700, 50, 5],
+            position: [-350, -4, 200],
+            rotation: [0, Math.PI / 2, 0]
+        });
+        this.addBoxToWorld({
+            size: [700, 50, 5],
+            position: [350, -4, 200],
+            rotation: [0, Math.PI / 2, 0]
+        });
+        this.addBoxToWorld({
+            size: [700, 50, 5],
+            position: [0, -4, 500],
+            rotation: [0, 0, 0]
+        });
+        this.addBoxToWorld({
+            size: [700, 50, 5],
+            position: [0, -4, -100],
+            rotation: [0, 0, 0]
+        });
+
     }
 
     dispose(): void {
-        this.model.traverse(temp => {
-            this.sceneDirective.remove(temp);
+        this.mapModel.traverse(node => {
+            this.sceneDirective.remove(node);
         })
+    }
+
+    addBoxToWorld(config: any): void {
+        let box = new THREE.Mesh(new THREE.BoxGeometry(config.size[0], config.size[1], config.size[2]));
+
+        const body = new CANNON.Body({
+            position: new CANNON.Vec3(config.position[0], config.position[1], config.position[2]),
+            collisionFilterGroup: 1,
+            collisionFilterMask: 2,
+            allowSleep: true,
+            mass: 0,
+            shape: threeToCannon(box as any, { type: ShapeType.BOX })?.shape as any
+        });
+
+        body.quaternion.setFromEuler(config.rotation[0], config.rotation[1], config.rotation[2]);
+        body.sleep();
+        body.computeAABB();
+        this.world.addBody(body);
+    }
+
+    addPortalBoxToWorld(index:string, position: number[]): void{
+        let box = new THREE.Mesh(new THREE.BoxGeometry(5, 10, 1));
+
+        const body = new CANNON.Body({
+            position: new CANNON.Vec3(position[0], 10, position[2]),
+            collisionFilterGroup: 3,
+            allowSleep: true,
+            mass: 0,
+            shape: threeToCannon(box as any, { type: ShapeType.BOX })?.shape as any
+        });
+        (body as any).name = index;
+        body.sleep();
+        body.computeAABB();
+        this.world.addBody(body);
     }
 }

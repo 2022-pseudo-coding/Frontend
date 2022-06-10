@@ -26,11 +26,14 @@ import { ProblemComponent } from './world/problem/problem.component';
 import { LightDirective } from './world/basics/light.directive';
 import { BallDirective } from './world/mesh/ball.directive';
 import { GroundDirective } from './world/mesh/ground.directive';
+import { FloorDirective } from './world/mesh/floor.directive';
 import { SocketIoConfig, SocketIoModule } from 'ngx-socket-io';
 import { environment } from 'src/environments/environment';
 import { PlayerService } from './services/player.service';
 import { InstructionDirective } from './world/mesh/instruction.directive';
 import { ProblemService } from './services/problem.service';
+import { UserCenterComponent } from './user-center/user-center.component';
+import { ChatComponent } from './chat/chat.component';
 
 const config: SocketIoConfig = { url: environment.SOCKET_URL, options: {autoConnect: false} };
 
@@ -52,6 +55,9 @@ const config: SocketIoConfig = { url: environment.SOCKET_URL, options: {autoConn
     BallDirective,
     GroundDirective,
     InstructionDirective,
+    FloorDirective,
+    UserCenterComponent,
+    ChatComponent,
   ],
   imports: [
     BrowserModule,
