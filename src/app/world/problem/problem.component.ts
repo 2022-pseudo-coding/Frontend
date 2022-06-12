@@ -36,10 +36,10 @@ export class ProblemComponent implements OnInit {
     console.log(this.inputList);
   }
 
-  addIns():void{
+  addIns(x:number):void{
     this.problemEmitService.problemEventEmitter.emit({
       ins:"add",
-      message:2,
+      message:x,
     });
   }
 

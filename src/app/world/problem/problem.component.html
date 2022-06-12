@@ -6,7 +6,7 @@
         <mat-card-subtitle>here is problem description <br> balabalabala</mat-card-subtitle>
       </mat-card>
       <div class="ins_list">
-        <button mat-raised-button color="primary" (click)="addIns();">Sample</button>
+        <button *ngFor="let x of ins" mat-raised-button color="primary" (click)="addIns(x);">Sample</button>
       </div>
     </mat-card>
   </div>
@@ -16,7 +16,6 @@
         <three-light mode="hemi" [position]="[0, 50, 0]"></three-light>
         <three-light mode="dir" [position]="[-1, 2, 1]"></three-light>
         <three-ground [position]="[0, 0, 0]"></three-ground>
-        <three-instruction *ngFor="let x of ins" [position]="[x,11,0]" [ins_type]="1"></three-instruction>
       </three-scene>
     </three-renderer-problem>
   </div>
