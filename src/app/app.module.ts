@@ -31,11 +31,11 @@ import { SocketIoConfig, SocketIoModule } from 'ngx-socket-io';
 import { environment } from 'src/environments/environment';
 import { PlayerService } from './services/player.service';
 import { InstructionDirective } from './world/mesh/instruction.directive';
-import { ProblemService } from './services/problem.service';
+import { ProblemBackendService } from './services/problem-backend.service';
 import { UserCenterComponent } from './user-center/user-center.component';
 import { ChatComponent } from './chat/chat.component';
 
-const config: SocketIoConfig = { url: environment.SOCKET_URL, options: {autoConnect: false} };
+const config: SocketIoConfig = { url: environment.SOCKET_URL, options: { autoConnect: false } };
 
 @NgModule({
   declarations: [
@@ -74,7 +74,7 @@ const config: SocketIoConfig = { url: environment.SOCKET_URL, options: {autoConn
     provide: HTTP_INTERCEPTORS,
     useClass: AuthInterceptor,
     multi: true
-  }, DataService, PlayerService ,ProblemService
+  }, DataService, PlayerService, ProblemBackendService
   ],
   bootstrap: [AppComponent]
 })
