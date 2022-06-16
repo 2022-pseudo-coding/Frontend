@@ -32,13 +32,11 @@ export class PlayerService {
     this.socket.emit('speak', { message });
   }
 
-  myCreate(){
-    //todo
-    this.socket.emit('create', {});
+  myCreate(name: string, position: number[]) {
+    this.socket.emit('create', { name, position });
   }
 
-  onOthersCreate(){
-    //todo
+  onOthersCreate() {
     return this.socket.fromEvent('create');
   }
 

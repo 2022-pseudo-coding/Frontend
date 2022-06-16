@@ -288,9 +288,11 @@ export class WorldMap {
     }
 
     dispose(): void {
-        this.mapModel.traverse(node => {
-            this.sceneDirective.remove(node);
-        })
+        if(this.mapModel){
+            this.mapModel.traverse(node => {
+                this.sceneDirective.remove(node);
+            })
+        }
     }
 
     addBoxToWorld(config: any): void {
@@ -354,7 +356,6 @@ export class WorldMap {
             })
         })
     }
-    
 
     addSocketPortal(problem: Problem): Promise<boolean> {
         const gltfLoader = new GLTFLoader();

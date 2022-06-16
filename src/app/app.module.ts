@@ -35,6 +35,8 @@ import { ProblemBackendService } from './services/problem-backend.service';
 import { UserCenterComponent } from './user-center/user-center.component';
 import { ChatComponent } from './chat/chat.component';
 import { CraftComponent } from './craft/craft.component';
+import { SolutionTableComponent } from './solution-table/solution-table.component';
+import { ManualComponent } from './manual/manual.component';
 
 const config: SocketIoConfig = { url: environment.SOCKET_URL, options: { autoConnect: false } };
 
@@ -60,6 +62,8 @@ const config: SocketIoConfig = { url: environment.SOCKET_URL, options: { autoCon
     UserCenterComponent,
     ChatComponent,
     CraftComponent,
+    SolutionTableComponent,
+    ManualComponent,
   ],
   imports: [
     BrowserModule,

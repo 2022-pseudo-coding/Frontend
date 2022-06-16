@@ -11,6 +11,7 @@ import { WorldMap } from './entity/world-map';
 import { ActivatedRoute } from '@angular/router';
 import CannonDebugger from 'cannon-es-debugger';
 import { Problem } from './world.component';
+import { DataService } from '../services/data.service';
 
 
 @Component({
@@ -27,9 +28,11 @@ export class RendererWorldComponent implements AfterViewInit, OnDestroy {
   @ContentChild(SceneDirective) scene!: SceneDirective
   @Output() loadedEmitter = new EventEmitter<boolean>();
   @Output() positionEmitter = new EventEmitter<number[]>();
+  @Output() problemEmitter = new EventEmitter<string>();
 
   @Input() mapId!: string;
   @Input() problems!: Problem[];
+  @Input() isInProblem!: boolean;
 
   renderer!: THREE.WebGLRenderer;
   camera!: THREE.PerspectiveCamera;
@@ -42,8 +45,9 @@ export class RendererWorldComponent implements AfterViewInit, OnDestroy {
 
   worldMap!: WorldMap;
   
-
-  constructor(private playerService: PlayerService, private route: ActivatedRoute) {
+  constructor(private playerService: PlayerService,
+    private route: ActivatedRoute,
+    private dataService: DataService) {
     this.width = window.innerWidth;
     this.height = window.innerHeight;
   }
@@ -78,10 +82,10 @@ export class RendererWorldComponent implements AfterViewInit, OnDestroy {
 
     this.initCannon();
 
-    this.myPlayer = new Player(this.scene, this.keyPressed, this.camera, orbitControls, localStorage.getItem('username')!, this.world);
+    this.myPlayer = new Player(this.scene, this.keyPressed, this.camera, orbitControls, localStorage.getItem('username')!, this.world, this);
     this.worldMap = new WorldMap(this.scene, this.mapId, this.world, this.problems);
 
-    //todo
+    //todo delete debug
     const debug = new (CannonDebugger as any)(this.scene.object, this.world as any);
 
     const clock = new THREE.Clock();
@@ -173,8 +177,13 @@ export class RendererWorldComponent implements AfterViewInit, OnDestroy {
         this.otherPlayers[key].setState(temp.quaternion, temp.walkDir, temp.currentAction, temp.position);
       })
     });
-    this.playerService.onOthersCreate().subscribe((resp:any) => {
-      // todo
+    this.playerService.onOthersCreate().subscribe((resp: any) => {
+      this.worldMap.addSocketPortal({
+        ifUserDefined: true,
+        name: resp.name,
+        position: resp.position,
+        rotationY: 0
+      }).then();
     })
   }
 
@@ -199,5 +208,9 @@ export class RendererWorldComponent implements AfterViewInit, OnDestroy {
     this.playerService.disconnect();
     this.myPlayer.dispose();
     this.worldMap.dispose();
+  }
+
+  showProblem(name: string): void {
+    this.problemEmitter.emit(name);
   }
 }

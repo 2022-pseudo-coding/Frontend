@@ -25,7 +25,6 @@ export class CraftComponent implements OnChanges {
   form: FormGroup;
   title = new FormControl('', [Validators.required]);
   description = new FormControl('', [Validators.required]);
-  //todo validators
   input = new FormControl('', [Validators.required, Validators.pattern("^[0-9a-zA-Z]*$")]);
   output = new FormControl('', [Validators.required, Validators.pattern("^[0-9a-zA-Z]*$")]);
   memory = new FormControl('', [Validators.required, Validators.pattern("^[0-9a-zA-Z-]*$")]);
@@ -33,7 +32,7 @@ export class CraftComponent implements OnChanges {
   constructor(
     private authService: AuthService,
     private formBuilder: FormBuilder,
-    public dialog: MatDialog,
+    private dialog: MatDialog,
     private playerService: PlayerService
   ) {
     this.form = this.formBuilder.group({
@@ -77,8 +76,17 @@ export class CraftComponent implements OnChanges {
         } else {
           this.openDialog('Registration Failed!', result.message);
         }
-        //todo sync socket
-        //todo leave a problem locally
+        this.title.setValue('')
+        this.description.setValue('')
+        this.memory.setValue('')
+        this.output.setValue('')
+        this.input.setValue('')
+        for (let inst of this.selectedInstructions) {
+          if (!inst.disabled) {
+            inst.checked = false;
+          }
+        }
+        this.playerService.myCreate(result.name, this.position);
       });
     }
   }

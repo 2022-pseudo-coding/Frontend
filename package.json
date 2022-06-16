@@ -30,6 +30,7 @@
     "ngx-socket-io": "^4.2.0",
     "rxjs": "~7.5.0",
     "three": "latest",
+    "three-spritetext": "^1.6.5",
     "three-to-cannon": "^4.0.2",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"

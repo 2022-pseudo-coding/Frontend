@@ -60,8 +60,10 @@ export class AbstractPlayer{
     }
 
     dispose(): void{
-        this.model.traverse(temp => {
-            this.sceneDirective.remove(temp);
-        })
+        if(this.model){
+            this.model.traverse(temp => {
+                this.sceneDirective.remove(temp);
+            })
+        } 
     }
 }

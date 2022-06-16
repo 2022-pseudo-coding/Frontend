@@ -4,6 +4,8 @@ import * as ORBIT from 'three/examples/jsm/controls/OrbitControls'
 import { AbstractPlayer } from "./abstract-player";
 import * as CANNON from 'cannon';
 import { threeToCannon, ShapeType } from 'three-to-cannon';
+import { DataService } from "src/app/services/data.service";
+import { RendererWorldComponent } from "../renderer-world.component";
 
 const directionsKeys = ['w', 'a', 's', 'd'];
 
@@ -22,20 +24,23 @@ export class Player extends AbstractPlayer {
     rayResult: CANNON.RaycastResult = new CANNON.RaycastResult();
     slopeVelocity: THREE.Vector3 = new THREE.Vector3(0, 0, 0);
 
-    inProblem: boolean = false;
+    rendererCopy:RendererWorldComponent;
 
-
-    constructor(sceneDirective: SceneDirective,
+    constructor(
+        sceneDirective: SceneDirective,
         keyPressed: Map<string, boolean>,
         camera: THREE.Camera,
         orbitControls: ORBIT.OrbitControls,
         username: string,
-        world: CANNON.World) {
+        world: CANNON.World,
+        rendererCopy:RendererWorldComponent
+    ) {
         super(sceneDirective, username);
         this.keyPressed = keyPressed;
         this.camera = camera;
         this.orbitControls = orbitControls;
         this.world = world;
+        this.rendererCopy = rendererCopy;
     }
 
     // animation loop
@@ -125,10 +130,10 @@ export class Player extends AbstractPlayer {
         return this.body.position;
     }
 
-    get bodyPositionFloat(): number[]{
+    get bodyPositionFloat(): number[] {
         return [Number(this.bodyPosition.x.toFixed(1)),
-            Number(this.bodyPosition.y.toFixed(1)) + 2,
-            Number(this.bodyPosition.z.toFixed(1))]
+        Number(this.bodyPosition.y.toFixed(1)) + 2,
+        Number(this.bodyPosition.z.toFixed(1))]
     }
 
     get modelPosition(): THREE.Vector3 {
@@ -167,10 +172,8 @@ export class Player extends AbstractPlayer {
         }, this.rayResult);
 
         let problemId = (this.rayResult.body as any)?.name;
-        if (rayHasHit && problemId && !this.inProblem) {
-            // todo
-            // enter the problem page
-            // set inProblem to be true
+        if (rayHasHit && problemId && !this.rendererCopy.isInProblem) {
+            this.rendererCopy.showProblem(problemId)
         }
     }
 }

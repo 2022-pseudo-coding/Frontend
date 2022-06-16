@@ -32,7 +32,8 @@ interface MapSolvedResult {
 }
 
 interface UserDefineResult {
-  message: string
+  message: string,
+  name: string
 }
 
 interface MapProblemsResult {

@@ -7,10 +7,10 @@ import { MatDialog } from '@angular/material/dialog';
 
 
 export interface Problem {
-  position:number[],
-  rotationY:number,
-  ifUserDefined:boolean,
-  name:string
+  position: number[],
+  rotationY: number,
+  ifUserDefined: boolean,
+  name: string
 }
 
 @Component({
@@ -21,10 +21,11 @@ export interface Problem {
 export class WorldComponent implements OnInit {
   loaded: boolean = false;
   mapId!: string;
-  mapSolved!:boolean;
+  mapSolved!: boolean;
   problems: Problem[] = [];
   position: number[] = [];
   instructions: string[] = [];
+  isInProblem:boolean = false;
 
   constructor(private router: Router,
     private authService: AuthService,
@@ -32,6 +33,7 @@ export class WorldComponent implements OnInit {
     private route: ActivatedRoute) { }
 
   ngOnInit(): void {
+    //todo delete debug
     this.debug();
     let temp = this.route.snapshot.routeConfig?.path;
     this.mapId = temp ? temp : 'camp';
@@ -40,11 +42,11 @@ export class WorldComponent implements OnInit {
 
   debug(): void {
     localStorage.setItem('username', 'mike');
-    localStorage.setItem('modelName', 'blueBot');
+    localStorage.setItem('modelName', 'redBot');
   }
 
   getProblems() {
-    if(!localStorage.getItem('token')){
+    if (!localStorage.getItem('token')) {
       this.router.navigate(['login']);
       return;
     }
@@ -57,8 +59,8 @@ export class WorldComponent implements OnInit {
       })).subscribe((result: any) => {
         this.mapSolved = result.mapSolved;
         this.instructions = result.instructions;
-        for (let temp of result.problems){
-          let worldInfo:string = temp.worldInfo;
+        for (let temp of result.problems) {
+          let worldInfo: string = temp.worldInfo;
           let numbers = worldInfo.split(';').map(Number);
           this.problems.push({
             position: [numbers[0], numbers[1], numbers[2]],
@@ -74,8 +76,15 @@ export class WorldComponent implements OnInit {
     this.loaded = loaded;
   }
 
-  setPosition(position:number[]){
+  setPosition(position: number[]) {
     this.position = position;
+  }
+
+  openProblem(name: string) {
+    console.log(name);
+    // todo dialog
+    // todo enter the page
+    this.isInProblem = true;
   }
 
 }
