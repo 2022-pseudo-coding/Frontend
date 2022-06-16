@@ -10,6 +10,7 @@ import { OtherPlayer } from './entity/other-player';
 import { WorldMap } from './entity/world-map';
 import { ActivatedRoute } from '@angular/router';
 import CannonDebugger from 'cannon-es-debugger';
+import { Problem } from './world.component';
 
 
 @Component({
@@ -25,8 +26,10 @@ export class RendererWorldComponent implements AfterViewInit, OnDestroy {
 
   @ContentChild(SceneDirective) scene!: SceneDirective
   @Output() loadedEmitter = new EventEmitter<boolean>();
+  @Output() positionEmitter = new EventEmitter<number[]>();
 
   @Input() mapId!: string;
+  @Input() problems!: Problem[];
 
   renderer!: THREE.WebGLRenderer;
   camera!: THREE.PerspectiveCamera;
@@ -76,7 +79,7 @@ export class RendererWorldComponent implements AfterViewInit, OnDestroy {
     this.initCannon();
 
     this.myPlayer = new Player(this.scene, this.keyPressed, this.camera, orbitControls, localStorage.getItem('username')!, this.world);
-    this.worldMap = new WorldMap(this.scene, this.mapId, this.world);
+    this.worldMap = new WorldMap(this.scene, this.mapId, this.world, this.problems);
 
     //todo
     const debug = new (CannonDebugger as any)(this.scene.object, this.world as any);
@@ -90,6 +93,8 @@ export class RendererWorldComponent implements AfterViewInit, OnDestroy {
       this.renderPhysics();
 
       this.myPlayer.update(delta);
+
+      this.positionEmitter.emit(this.myPlayer.bodyPositionFloat);
 
       orbitControls.update();
 
@@ -168,6 +173,9 @@ export class RendererWorldComponent implements AfterViewInit, OnDestroy {
         this.otherPlayers[key].setState(temp.quaternion, temp.walkDir, temp.currentAction, temp.position);
       })
     });
+    this.playerService.onOthersCreate().subscribe((resp:any) => {
+      // todo
+    })
   }
 
   initCannon(): void {

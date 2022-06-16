@@ -34,6 +34,7 @@ import { InstructionDirective } from './world/mesh/instruction.directive';
 import { ProblemBackendService } from './services/problem-backend.service';
 import { UserCenterComponent } from './user-center/user-center.component';
 import { ChatComponent } from './chat/chat.component';
+import { CraftComponent } from './craft/craft.component';
 
 const config: SocketIoConfig = { url: environment.SOCKET_URL, options: { autoConnect: false } };
 
@@ -58,6 +59,7 @@ const config: SocketIoConfig = { url: environment.SOCKET_URL, options: { autoCon
     FloorDirective,
     UserCenterComponent,
     ChatComponent,
+    CraftComponent,
   ],
   imports: [
     BrowserModule,

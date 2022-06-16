@@ -125,6 +125,12 @@ export class Player extends AbstractPlayer {
         return this.body.position;
     }
 
+    get bodyPositionFloat(): number[]{
+        return [Number(this.bodyPosition.x.toFixed(1)),
+            Number(this.bodyPosition.y.toFixed(1)) + 2,
+            Number(this.bodyPosition.z.toFixed(1))]
+    }
+
     get modelPosition(): THREE.Vector3 {
         return this.model.position;
     }

@@ -1,7 +1,8 @@
 <mat-spinner mode="indeterminate" *ngIf="!loaded"></mat-spinner>
 <app-chat [mapId]="mapId"></app-chat>
+<app-craft [mapId]="mapId" [mapSolved]="mapSolved" [position]="position" [instructions]="instructions"></app-craft>
 <div id="wrapper">
-    <three-renderer-world (loadedEmitter)="setLoaded($event)" [mapId]="mapId">
+    <three-renderer-world (loadedEmitter)="setLoaded($event)" [mapId]="mapId" [problems]="problems" (positionEmitter)="setPosition($event)">
         <three-scene *ngIf="mapId === 'camp'">
             <three-light mode="hemi" [position]="[0, 50, 0]"></three-light>
             <three-light mode="dir" [position]="[-1, 2, 1]"></three-light>

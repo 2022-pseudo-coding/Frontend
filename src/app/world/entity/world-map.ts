@@ -5,22 +5,29 @@ import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { threeToCannon, ShapeType } from 'three-to-cannon';
 import * as CANNON from 'cannon';
+import { Problem } from '../world.component';
 
 
 export class WorldMap {
     mixer!: THREE.AnimationMixer;
     sceneDirective: SceneDirective;
     mapModel!: THREE.Group;
-    portalModel!: THREE.Group;
     mapId: string;
     mapUrl: string = '../../../assets/model/map/';
     portalUrl: string = '../../../assets/model/portal/'
     world: CANNON.World;
 
-    constructor(sceneDirective: SceneDirective, mapId: string, world: CANNON.World) {
+    problems: Problem[];
+
+    constructor(sceneDirective: SceneDirective,
+        mapId: string,
+        world: CANNON.World,
+        problems: Problem[]
+    ) {
         this.sceneDirective = sceneDirective;
         this.mapId = mapId;
         this.world = world;
+        this.problems = problems;
     }
 
     load(): Promise<boolean> {
@@ -46,23 +53,7 @@ export class WorldMap {
                     rotationY: -Math.PI * 3 / 8
                 });
                 this.addPhysicsCamp();
-                gltfLoader.setPath(this.portalUrl + 'camp/').load('scene.gltf', gltf => {
-                    this.portalModel = gltf.scene;
-                    let infos: any[] = [{ pos: [-2, 7, -87], rotationY: 0 },
-                    { pos: [3.7, 6, -120.7], rotationY: 0 },
-                    { pos: [-70, 7, -181.3], rotationY: 0 },
-                    { pos: [31, 7, -172], rotationY: -Math.PI / 3 },
-                    { pos: [101, 7, -145.6], rotationY: Math.PI / 2 }];
-                    infos.forEach((info, id) => {
-                        this.addPortalBoxToWorld("1-" + id, info.pos);
-                        this.preprocess(this.portalModel.clone(), {
-                            scale: 3,
-                            position: info.pos,
-                            rotationY: info.rotationY
-                        });
-                    })
-                    resolve(true);
-                })
+                this.addOriginalPortal(gltfLoader, 3, resolve);
             });
         })
     }
@@ -78,23 +69,7 @@ export class WorldMap {
                     rotationY: 0
                 });
                 this.addPhysicsIsland();
-                gltfLoader.setPath(this.portalUrl + 'island/').load('scene.gltf', gltf => {
-                    this.portalModel = gltf.scene;
-                    let infos: any[] = [{ pos: [12.8, 3, -459], rotationY: 0 },
-                    { pos: [-80, 3, -508], rotationY: 0 },
-                    { pos: [32.5, 3, -565], rotationY: 0 },
-                    { pos: [117.4, 3, -460.3], rotationY: -Math.PI / 3 },
-                    { pos: [145.2, 3, -533], rotationY: Math.PI / 2 }];
-                    infos.forEach((info, id) => {
-                        this.addPortalBoxToWorld("2-" + id, info.pos);
-                        this.preprocess(this.portalModel.clone(), {
-                            scale: 1,
-                            position: info.pos,
-                            rotationY: info.rotationY
-                        });
-                    })
-                    resolve(true);
-                })
+                this.addOriginalPortal(gltfLoader, 1, resolve);
             });
         })
     }
@@ -119,22 +94,7 @@ export class WorldMap {
                         rotationY: 0
                     });
                     this.addPhysicsForest();
-                    gltfLoader.setPath(this.portalUrl + 'forest/').load('scene.gltf', gltf => {
-                        this.portalModel = gltf.scene;
-                        let infos: any[] = [{ pos: [-0.3, 0, -59.2], rotationY: 0 },
-                        { pos: [175, 3, 302], rotationY: Math.PI * 1.21 },
-                        { pos: [-142.6, 3, 238.5], rotationY: Math.PI / 2 },
-                        { pos: [0.04, 0, 369], rotationY: Math.PI }];
-                        infos.forEach((info, id) => {
-                            this.addPortalBoxToWorld("3-" + id, info.pos);
-                            this.preprocess(this.portalModel.clone(), {
-                                scale: 4,
-                                position: info.pos,
-                                rotationY: info.rotationY
-                            });
-                        })
-                        resolve(true);
-                    })
+                    this.addOriginalPortal(gltfLoader, 4, resolve);
                 });
             });
 
@@ -351,7 +311,7 @@ export class WorldMap {
         this.world.addBody(body);
     }
 
-    addPortalBoxToWorld(index:string, position: number[]): void{
+    addPortalBoxToWorld(name: string, position: number[]): void {
         let box = new THREE.Mesh(new THREE.BoxGeometry(5, 10, 1));
 
         const body = new CANNON.Body({
@@ -361,9 +321,55 @@ export class WorldMap {
             mass: 0,
             shape: threeToCannon(box as any, { type: ShapeType.BOX })?.shape as any
         });
-        (body as any).name = index;
+        (body as any).name = name;
         body.sleep();
         body.computeAABB();
         this.world.addBody(body);
+    }
+
+    private addOriginalPortal(gltfLoader:GLTFLoader, scale:number, resolve:any):void {
+        gltfLoader.setPath(this.portalUrl + this.mapId + '/').load('scene.gltf', gltf => {
+            let portalModel = gltf.scene;
+
+            this.problems.filter(problem => !problem.ifUserDefined).forEach((problem) => {
+                this.addPortalBoxToWorld(problem.name, problem.position);
+                this.preprocess(portalModel.clone(), {
+                    scale: scale,
+                    position: problem.position,
+                    rotationY: problem.rotationY
+                });
+            });
+            gltfLoader.setPath(this.portalUrl + 'user/').load('scene.gltf', gltf => {
+                let portalModel = gltf.scene;
+
+                this.problems.filter(problem => problem.ifUserDefined).forEach((problem) => {
+                    this.addPortalBoxToWorld(problem.name, problem.position);
+                    this.preprocess(portalModel.clone(), {
+                        scale: 1,
+                        position: problem.position,
+                        rotationY: problem.rotationY
+                    });
+                });
+                resolve(true);
+            })
+        })
+    }
+    
+
+    addSocketPortal(problem: Problem): Promise<boolean> {
+        const gltfLoader = new GLTFLoader();
+        return new Promise((resolve) => {
+            gltfLoader.setPath(this.portalUrl + 'user/').load('scene.gltf', gltf => {
+                let portalModel = gltf.scene;
+                this.addPortalBoxToWorld(problem.name, [problem.position[0], problem.position[1], problem.position[2]]);
+                this.preprocess(portalModel.clone(), {
+                    scale: 1,
+                    position: problem.position,
+                    rotationY: 0
+                });
+                resolve(true);
+            });
+        });
+
     }
 }

@@ -27,6 +27,18 @@ interface LoginResult {
   modelName: string
 }
 
+interface MapSolvedResult {
+  mapSolved: boolean
+}
+
+interface UserDefineResult {
+  message: string
+}
+
+interface MapProblemsResult {
+  problems: any[]
+}
+
 
 @Injectable({
   providedIn: 'root'
@@ -53,5 +65,47 @@ export class AuthService {
 
   changePassword(password: string, rePassword: string, token: string) {
     return this.http.post<ChangeResult>(baseUrl + '/changePassword', { password, rePassword, token });
+  }
+
+  mapSolved(mapId:string){
+    let token:string = localStorage.getItem('token')!;
+    let stage = this.mapIdToStage(mapId);
+
+    return this.http.post<MapSolvedResult>(baseUrl + '/mapSolved', {stage, token});
+  }
+
+  mapProblems(mapId:string){
+    let token:string = localStorage.getItem('token')!;
+    let stage = this.mapIdToStage(mapId);
+
+    return this.http.post<MapProblemsResult>(baseUrl + '/mapProblems', {token, stage});
+  }
+
+  userDefine(mapId:string, problem:any){
+    let token = localStorage.getItem('token')!;
+    let input = problem.input.split('').join(';');
+    let output = problem.output.split('').join(';');
+    let memory = problem.memory.split('').join(';');
+    let instructions = problem.instructions.join(';');
+    let worldInfo = problem.worldInfo.join(';') + ';0';
+    let title = problem.title;
+    let description = problem.description;
+    let stage = this.mapIdToStage(mapId);
+
+    return this.http.post<UserDefineResult>(baseUrl + '/userDefine', {
+      token, stage, title, description, input, output, instructions, memory, worldInfo
+    })
+  }
+
+  private mapIdToStage(mapId:string): number{
+    switch(mapId){
+      case 'camp':
+        return 1;
+      case 'island':
+        return 2;
+      case 'forest':
+        return 3;
+    }
+    return 1;
   }
 }
