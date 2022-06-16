@@ -6,6 +6,7 @@ import DragControls from 'drag-controls';
 import { Mesh, Object3D } from 'three';
 import { InstructionDirective } from '../mesh/instruction.directive';
 import { ProblemService } from './problem.service';
+import { Inst } from 'src/app/services/problem-backend.service';
 
 CameraControls.install({ THREE });
 DragControls.install({ THREE });
@@ -32,10 +33,11 @@ export class RendererProblemComponent implements AfterViewInit {
 
   insList: Array<Array<number>>;
   insTargetMeshList: Array<Array<Mesh>>;
+  insTargetLimitList: Array<number>;
   moveList: Array<Object3D>;
   pageOffset: number;
 
-  constructor(public problemEventService: ProblemService) {
+  constructor(public problemService: ProblemService) {
     if (this.mode === 'fullscreen') {
       this.width = window.innerWidth * 0.4;
       this.height = window.innerHeight * 0.85;
@@ -49,6 +51,7 @@ export class RendererProblemComponent implements AfterViewInit {
     this.pageOffset = 0;
     this.moveList = new Array<Object3D>();
     this.insTargetMeshList = new Array<Array<Mesh>>();
+    this.insTargetLimitList = [];
   }
 
   ngAfterViewInit() {
@@ -81,12 +84,26 @@ export class RendererProblemComponent implements AfterViewInit {
         let insLineHeight = obj.position.z - obj.position.z % 10 + (obj.position.z > 0 ? 5 : -5);
         let index = (insLineHeight + 35) / 10 + this.pageOffset;
         if (this.insList[index][0] == -1) {
-          this.insList[index][0] = 0;
           obj.position.setX(-12);
-          obj.position.setY(15);
+          obj.position.setY(obj.position.y);
           obj.position.setZ(insLineHeight);
           this.moveList.push(obj);
-          this.showInsTarget(index);
+          let insIndex = Math.round(10 * (obj.position.y - 13));
+          this.insList[index][0] = insIndex;
+          let limit = -1;
+          switch (insIndex) {
+            case 2:
+            case 3:
+            case 4:
+            case 5: limit = 24; break;
+            case 8:
+            case 9:
+            case 10: limit = 49; break;
+          }
+          this.insTargetLimitList[index] = limit;
+          if (limit != -1) {
+            this.showInsTarget(index);
+          }
         }
       }
       if (Math.abs(obj.position.x - 22) < 10 && Math.abs(obj.position.z - 35) < 10) {
@@ -161,7 +178,6 @@ export class RendererProblemComponent implements AfterViewInit {
         raycaster.setFromCamera(mouse, this.camera);
         var intersects = raycaster.intersectObjects(this.scene.meshes);
         let name = intersects[0].object.name
-        console.log(name);
         switch (name) {
           case "pageUp": this.pageMove(-1); break;
           case "pageDown": this.pageMove(1); break;
@@ -185,13 +201,57 @@ export class RendererProblemComponent implements AfterViewInit {
               this.changeInsTarget(index, current - 1);
           }
         }
+        if (name == "run") {
+          let inst = [];
+          for (let i = 0; i < this.insList.length; i++) {
+            if (this.insList[i][0] == -1) break;
+            let name = "";
+            switch (this.insList[i][0]) {
+              case 0: name = "inbox"; break;
+              case 1: name = "outbox"; break;
+              case 2: name = "copyfrom"; break;
+              case 3: name = "copyto"; break;
+              case 4: name = "add"; break;
+              case 5: name = "sub"; break;
+              case 6: name = "bump+"; break;
+              case 7: name = "bump-"; break;
+              case 8: name = "jump"; break;
+              case 9: name = "jump_zero"; break;
+              case 10: name = "jump_neg"; break;
+            }
+            let referTo = 0;
+            let jumpTo = 0;
+            switch (this.insList[i][0]) {
+              case 2:
+              case 3:
+              case 4:
+              case 5: referTo = this.insList[i][1]; break;
+              case 8:
+              case 9:
+              case 10: jumpTo = this.insList[i][1]; break;
+            }
+            inst.push(
+              {
+                name: name,
+                color: "",
+                referTo: referTo,
+                jumpTo: jumpTo
+              }
+            );
+          }
+          this.problemService.problemEventEmitter.emit({
+            ins: "run",
+            insList: inst,
+          });
+          // console.log(inst);
+        }
       }
     })
 
-    this.problemEventService.problemEventEmitter.subscribe((value: any) => {
+    this.problemService.problemEventEmitter.subscribe((value: any) => {
       if (value.ins == "add") {
         console.log(value.message);
-        this.addIns();
+        this.addIns(value.message);
       }
     });
     // press f to drag
@@ -218,14 +278,30 @@ export class RendererProblemComponent implements AfterViewInit {
       this.addIndex(i);
       this.addInsPosHint(i);
       this.addInsTarget(i);
+      this.insTargetLimitList.push(-1);
     }
     this.addPageControlUI();
     this.addDeleteZone();
     this.addStepControl();
   }
 
-  addIns(): void {
-    let ins = this.addSimplePicMesh('../../../assets/icons/problem/default.jpg', 20, 8, 20, 13, 0);
+  addIns(index: number): void {
+    let picpath = "../../../assets/icons/problem/ins_";
+    switch (index) {
+      case 0: picpath += "inbox"; break;
+      case 1: picpath += "outbox"; break;
+      case 2: picpath += "copyfrom"; break;
+      case 3: picpath += "copyto"; break;
+      case 4: picpath += "add"; break;
+      case 5: picpath += "sub"; break;
+      case 6: picpath += "bump+"; break;
+      case 7: picpath += "bump-"; break;
+      case 8: picpath += "jump"; break;
+      case 9: picpath += "jump_zero"; break;
+      case 10: picpath += "jump_neg"; break;
+    }
+    picpath += ".png";
+    let ins = this.addSimplePicMesh(picpath, 16, 8, 20, 13 + index * 0.1, 0);
     this.dragableObj.push(ins);
   }
 
@@ -242,10 +318,10 @@ export class RendererProblemComponent implements AfterViewInit {
     let indexText = index.toString();
     if (index <= 9) indexText = "0" + indexText;
     let text = this.addTextBlock("00", 25, 150, 3, -35 + index * 10);
-    let add10 = this.addSimplePicMesh('../../../assets/icons/problem/numAdd.png', 1.8, 1.8, 2.3, 11.1, -35 + index * 10 - 1.6);
-    let add1 = this.addSimplePicMesh('../../../assets/icons/problem/numAdd.png', 1.8, 1.8, 3.8, 11.1, -35 + index * 10 - 1.6);
-    let minus10 = this.addSimplePicMesh('../../../assets/icons/problem/numMinus.png', 1.8, 1.8, 2.3, 11.1, -35 + index * 10 + 1.6);
-    let minus1 = this.addSimplePicMesh('../../../assets/icons/problem/numMinus.png', 1.8, 1.8, 3.8, 11.1, -35 + index * 10 + 1.6);
+    let add10 = this.addSimplePicMesh('../../../assets/icons/problem/numAdd.png', 1.6, 1.2, 2.3, 11.1, -35 + index * 10 - 1.6);
+    let add1 = this.addSimplePicMesh('../../../assets/icons/problem/numAdd.png', 1.6, 1.2, 3.8, 11.1, -35 + index * 10 - 1.6);
+    let minus10 = this.addSimplePicMesh('../../../assets/icons/problem/numMinus.png', 1.6, 1.2, 2.3, 11.1, -35 + index * 10 + 1.6);
+    let minus1 = this.addSimplePicMesh('../../../assets/icons/problem/numMinus.png', 1.6, 1.2, 3.8, 11.1, -35 + index * 10 + 1.6);
     text.name = "insTargetText_" + indexText + "_00";
     add10.name = "insTargetAdd10_" + indexText;
     add1.name = "insTargetAdd01_" + indexText;
@@ -258,6 +334,8 @@ export class RendererProblemComponent implements AfterViewInit {
   }
 
   changeInsTarget(index: number, target: number) {
+    let limit = this.insTargetLimitList[index];
+    if (limit != -1 && (target < 0 || target > limit)) return;
     let old = this.insTargetMeshList[index][0];
     let text = target.toString();
     if (target <= 9) text = "0" + text;
@@ -265,6 +343,7 @@ export class RendererProblemComponent implements AfterViewInit {
     let updated = this.addTextBlock(text, 25, 150, 3, old.position.z);
     updated.name = old.name.substring(0, 17) + text;
     this.insTargetMeshList[index][0] = updated;
+    this.moveList.push(updated);
     this.insList[index][1] = target;
     this.scene.remove(old);
   }
@@ -300,9 +379,9 @@ export class RendererProblemComponent implements AfterViewInit {
   }
 
   addStepControl(): void {
-    this.addSimplePicMesh('../../../assets/icons/problem/nextStep.png', 15, 5, 22, 12, -35);
-    this.addSimplePicMesh('../../../assets/icons/problem/previousStep.png', 15, 5, 22, 12, -30);
-    this.addSimplePicMesh('../../../assets/icons/problem/run.png', 15, 5, 22, 12, -25);
+    this.addSimplePicMesh('../../../assets/icons/problem/nextStep.png', 15, 5, 22, 12, -35).name = "nextStep";
+    this.addSimplePicMesh('../../../assets/icons/problem/previousStep.png', 15, 5, 22, 12, -30).name = "previousStep";
+    this.addSimplePicMesh('../../../assets/icons/problem/run.png', 15, 5, 22, 12, -25).name = "run";
 
   }
 
@@ -361,9 +440,4 @@ export class RendererProblemComponent implements AfterViewInit {
     object.position.set(posX, posY, posZ);
     return object;
   }
-
-
-
-
-
 }

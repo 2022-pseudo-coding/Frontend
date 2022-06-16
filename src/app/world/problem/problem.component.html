@@ -2,11 +2,12 @@
   <div class="problem_left">
     <mat-card class="problem_card">
       <mat-card class="problem_detail">
-        <mat-card-title>here is problem title</mat-card-title>
-        <mat-card-subtitle>here is problem description <br> balabalabala</mat-card-subtitle>
+        <mat-card-title>{{title}}</mat-card-title>
+        <mat-card-subtitle>{{description}}</mat-card-subtitle>
+        <mat-card-footer style="margin:1% ;">完成情况：{{this.currentStatus}}</mat-card-footer>
       </mat-card>
       <div class="ins_list">
-        <button *ngFor="let x of ins" mat-raised-button color="primary" (click)="addIns(x);">Sample</button>
+        <button *ngFor="let x of availableInsList" mat-raised-button color="primary" (click)="addIns(x);" class="insBtn">{{this.insNameList[x]}}</button>
       </div>
     </mat-card>
   </div>
@@ -31,7 +32,7 @@
     <div class="storage">
       <div class="storage_part" *ngFor="let item of storageList let i = index">
         <p class="storage_part_value">{{item}}</p>
-        <p class="storage_part_index">{{i}}<p>
+        <p class="storage_part_index">{{i}}</p>
       </div>
     </div>
     <div class="outbox">
