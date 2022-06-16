@@ -1,7 +1,8 @@
 <mat-spinner mode="indeterminate" *ngIf="!loaded"></mat-spinner>
-<app-chat [mapId]="mapId"></app-chat>
-<app-craft [mapId]="mapId" [mapSolved]="mapSolved" [position]="position" [instructions]="instructions"></app-craft>
 
+<app-craft [mapId]="mapId" [mapSolved]="mapSolved" [position]="position" [instructions]="instructions"></app-craft>
+<app-chat [mapId]="mapId"></app-chat>
+<app-manual></app-manual>
 <div id="wrapper">
     <three-renderer-world
     (loadedEmitter)="setLoaded($event)"

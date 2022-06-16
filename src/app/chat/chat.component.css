@@ -17,6 +17,7 @@
     width: 60px;
     position: absolute;
     top: 45%;
+    z-index: 99;
 }
 
 .mat-icon-button{
@@ -27,6 +28,7 @@
     visibility: visible;
     width: 85%;
     padding: 10px;
+    z-index: 100;
 }
 
 .members{

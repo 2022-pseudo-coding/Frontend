@@ -7,7 +7,6 @@ import { PlayerService } from '../services/player.service';
   styleUrls: ['./chat.component.css']
 })
 export class ChatComponent implements OnInit {
-  showSideNav: boolean = false;
   text: string = "";
   others: any[] = [];
   messages: any[] = [];

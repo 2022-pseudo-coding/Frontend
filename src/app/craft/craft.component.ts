@@ -14,7 +14,6 @@ import { HttpErrorResponse } from '@angular/common/http';
   styleUrls: ['./craft.component.css']
 })
 export class CraftComponent implements OnChanges {
-  showSideNav: boolean = false;
   selectedInstructions: any[] = [];
   instructionInitialized = false;
   @Input() mapSolved!: boolean;
