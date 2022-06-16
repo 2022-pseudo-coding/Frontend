@@ -4,6 +4,8 @@ import { AuthService } from '../services/auth.service';
 import { catchError, EMPTY } from 'rxjs';
 import { DataService } from '../services/data.service';
 import { MatDialog } from '@angular/material/dialog';
+import { TableDialogComponent, TableDialogData } from '../table-dialog/table-dialog.component';
+import { ProblemBackendService } from '../services/problem-backend.service';
 
 
 export interface Problem {
@@ -25,16 +27,17 @@ export class WorldComponent implements OnInit {
   problems: Problem[] = [];
   position: number[] = [];
   instructions: string[] = [];
-  isInProblem:boolean = false;
+  isInProblem: boolean = false;
+  canOpenDialog:boolean = true;
 
   constructor(private router: Router,
     private authService: AuthService,
     private dataService: DataService,
-    private route: ActivatedRoute) { }
+    private route: ActivatedRoute,
+    private dialog: MatDialog,
+    private problemService: ProblemBackendService) { }
 
   ngOnInit(): void {
-    //todo delete debug
-    this.debug();
     let temp = this.route.snapshot.routeConfig?.path;
     this.mapId = temp ? temp : 'camp';
     this.getProblems();
@@ -81,10 +84,36 @@ export class WorldComponent implements OnInit {
   }
 
   openProblem(name: string) {
-    console.log(name);
-    // todo dialog
-    // todo enter the page
-    this.isInProblem = true;
+    if (this.canOpenDialog) {
+      this.canOpenDialog = false;
+      let splits = name.split('-');
+      this.problemService.getProblem(splits[0], splits[1]).subscribe(result => {
+        let solutions = result.problem.solutions;
+        let hasSolutions = solutions.length !== 0;
+        let tableData: TableDialogData = {
+          hasSolutions: hasSolutions,
+          message: hasSolutions ? 'ignored' : 'No one has solved this problem yet',
+          solutions: solutions,
+          title: 'Problem ' + name
+        };
+        const dialogRef = this.dialog.open(TableDialogComponent, {
+          width: '500px',
+          data: tableData
+        });
+        dialogRef.afterClosed().subscribe(result => {
+          if (result === true) {
+            this.isInProblem = true;
+          }else {
+            this.canOpenDialog = true;
+          }
+        });
+      });
+    }
+
   }
 
+  goBack(): void {
+    this.isInProblem = false;
+    this.canOpenDialog = true
+  }
 }

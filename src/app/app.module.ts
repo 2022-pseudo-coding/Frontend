@@ -37,6 +37,7 @@ import { ChatComponent } from './chat/chat.component';
 import { CraftComponent } from './craft/craft.component';
 import { SolutionTableComponent } from './solution-table/solution-table.component';
 import { ManualComponent } from './manual/manual.component';
+import { TableDialogComponent } from './table-dialog/table-dialog.component';
 
 const config: SocketIoConfig = { url: environment.SOCKET_URL, options: { autoConnect: false } };
 
@@ -64,6 +65,7 @@ const config: SocketIoConfig = { url: environment.SOCKET_URL, options: { autoCon
     CraftComponent,
     SolutionTableComponent,
     ManualComponent,
+    TableDialogComponent,
   ],
   imports: [
     BrowserModule,

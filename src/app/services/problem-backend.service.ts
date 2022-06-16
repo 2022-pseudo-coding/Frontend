@@ -15,7 +15,10 @@ export interface Problem {
   memory: string,
 
   /*可以使用的指令 */
-  instructions: Inst[]
+  instructions: Inst[],
+
+  /* 答案 */
+  solutions: Solution[]
 }
 
 export interface Inst {
@@ -37,6 +40,12 @@ export interface Status {
   hand: string
 }
 
+export interface Solution {
+  steps: number,
+  numInst: number,
+  instructions: Inst[]
+}
+
 interface SolveResult {
   message: string,
   statusList: Status[]
@@ -46,6 +55,8 @@ interface ProblemResult {
   message: string,
   problem: Problem
 }
+
+
 
 @Injectable({
   providedIn: 'root'
