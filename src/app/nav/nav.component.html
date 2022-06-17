@@ -9,11 +9,11 @@
       <span>Login</span>
     </button>
 
-    <button mat-menu-item *ngIf="isLoggedIn" [matMenuTriggerFor]="maps">
+    <button mat-menu-item *ngIf="isLoggedIn && username!=='admin'" [matMenuTriggerFor]="maps">
       <mat-icon>map</mat-icon>
       <span>maps</span>
     </button>
-    <button mat-menu-item *ngIf="isLoggedIn" routerLink="center" routerLinkActive="active" >
+    <button mat-menu-item *ngIf="isLoggedIn  && username!=='admin'" routerLink="center" routerLinkActive="active" >
       <mat-icon>account_circle</mat-icon>
       <span>Center</span>
     </button>

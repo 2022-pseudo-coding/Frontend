@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
+import { NgChartsModule } from 'ng2-charts';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { AngularMaterialModule } from './angular-material.module';
 import { AppRoutingModule } from './app-routing.module';
@@ -78,6 +78,7 @@ const config: SocketIoConfig = { url: environment.SOCKET_URL, options: { autoCon
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
+    NgChartsModule,
     SocketIoModule.forRoot(config)
   ],
   providers: [{

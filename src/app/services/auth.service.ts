@@ -41,7 +41,8 @@ interface MapProblemsResult {
 }
 
 interface AdminCenterResult{
-
+  userCount: number,
+  solutionMap: any
 }
 
 
