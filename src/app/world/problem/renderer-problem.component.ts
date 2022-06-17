@@ -29,6 +29,10 @@ export class RendererProblemComponent implements AfterViewInit {
   camera!: THREE.OrthographicCamera;
   cameraControls!: CameraControls;
   dragControls!: DragControls;
+  runBtnGroup!: Array<Mesh>;
+  stopBtnGroup!: Array<Mesh>;
+
+
   dragableObj!: Array<Object3D>;
 
   insList: Array<Array<number>>;
@@ -36,6 +40,9 @@ export class RendererProblemComponent implements AfterViewInit {
   insTargetLimitList: Array<number>;
   moveList: Array<Object3D>;
   pageOffset: number;
+
+  isRunning = false;
+  limit = 0;
 
   constructor(public problemService: ProblemService) {
     if (this.mode === 'fullscreen') {
@@ -95,7 +102,7 @@ export class RendererProblemComponent implements AfterViewInit {
             case 2:
             case 3:
             case 4:
-            case 5: limit = 24; break;
+            case 5: limit = this.limit - 1; break;
             case 8:
             case 9:
             case 10: limit = 49; break;
@@ -114,6 +121,7 @@ export class RendererProblemComponent implements AfterViewInit {
       }
     });
     this.dragControls.addEventListener('dragstart', event => {
+      if(this.isRunning)return;
       let obj = event['object'];
       if (Math.abs(obj.position.x + 12) < 1 && Math.abs(Math.abs(obj.position.z % 10) - 5) < 1) {
         let insLineHeight = obj.position.z - obj.position.z % 10 + (obj.position.z > 0 ? 5 : -5);
@@ -129,6 +137,7 @@ export class RendererProblemComponent implements AfterViewInit {
       }
     });
 
+    this.switchMode(false);
 
     //animation loop
     const clock = new THREE.Clock();
@@ -182,7 +191,7 @@ export class RendererProblemComponent implements AfterViewInit {
           case "pageUp": this.pageMove(-1); break;
           case "pageDown": this.pageMove(1); break;
         }
-        if (name.substring(0, 9) === "insTarget") {
+        if (name.substring(0, 9) === "insTarget" && (!this.isRunning)) {
           if (name.charAt(9) == "A") {
             let index = Number(name.substring(15));
             let current = Number(this.insTargetMeshList[index][0].name.substring(17));
@@ -243,7 +252,20 @@ export class RendererProblemComponent implements AfterViewInit {
             ins: "run",
             insList: inst,
           });
+
+          this.switchMode(true);
           // console.log(inst);
+        }
+        if (name == "stop") {
+          this.switchMode(false);
+          this.problemService.problemEventEmitter.emit({
+            ins: "stop"
+          });
+        }
+        if (name == "next"||name=="pre") {
+          this.problemService.problemEventEmitter.emit({
+            ins: name
+          });
         }
       }
     })
@@ -252,6 +274,12 @@ export class RendererProblemComponent implements AfterViewInit {
       if (value.ins == "add") {
         console.log(value.message);
         this.addIns(value.message);
+      }
+    });
+
+    this.problemService.problemEventEmitter.subscribe((value: any) => {
+      if (value.ins == "limit") {
+        this.limit = value.limit;
       }
     });
     // press f to drag
@@ -265,6 +293,8 @@ export class RendererProblemComponent implements AfterViewInit {
     // });
   }
 
+
+
   pageMove(offset: number): void {
     if (this.pageOffset + offset < 0 || this.pageOffset + offset > 45) return
     this.pageOffset += offset;
@@ -273,7 +303,11 @@ export class RendererProblemComponent implements AfterViewInit {
     }
   }
 
+
+
   UIInit(): void {
+    this.runBtnGroup = new Array<Mesh>();
+    this.stopBtnGroup = new Array<Mesh>();
     for (let i = 0; i <= 49; i++) {
       this.addIndex(i);
       this.addInsPosHint(i);
@@ -286,6 +320,7 @@ export class RendererProblemComponent implements AfterViewInit {
   }
 
   addIns(index: number): void {
+    if(this.isRunning)return;
     let picpath = "../../../assets/icons/problem/ins_";
     switch (index) {
       case 0: picpath += "inbox"; break;
@@ -331,6 +366,24 @@ export class RendererProblemComponent implements AfterViewInit {
     this.insTargetMeshList.push(insTargetMeshPackage);
     this.moveList.push(text, add10, add1, minus10, minus1);
     this.hideInsTarget(index);
+  }
+
+  switchMode(run: boolean): void {
+    if (run) {
+      for (let i = 0; i < this.runBtnGroup.length; i++)
+        this.runBtnGroup[i].position.setY(12);
+      for (let i = 0; i < this.stopBtnGroup.length; i++)
+        this.stopBtnGroup[i].position.setY(-12);
+      (this.dragControls as any).enabled = false;
+    } else {
+      for (let i = 0; i < this.runBtnGroup.length; i++)
+        this.runBtnGroup[i].position.setY(-12);
+      for (let i = 0; i < this.stopBtnGroup.length; i++)
+        this.stopBtnGroup[i].position.setY(12);
+      (this.dragControls as any).enabled = true;
+    }
+    this.isRunning = run;
+
   }
 
   changeInsTarget(index: number, target: number) {
@@ -379,10 +432,12 @@ export class RendererProblemComponent implements AfterViewInit {
   }
 
   addStepControl(): void {
-    this.addSimplePicMesh('../../../assets/icons/problem/nextStep.png', 15, 5, 22, 12, -35).name = "nextStep";
-    this.addSimplePicMesh('../../../assets/icons/problem/previousStep.png', 15, 5, 22, 12, -30).name = "previousStep";
-    this.addSimplePicMesh('../../../assets/icons/problem/run.png', 15, 5, 22, 12, -25).name = "run";
-
+    let run = this.addSimplePicMesh('../../../assets/icons/problem/run.png', 20, 6.6, 23, 12, -32); run.name = "run";
+    let stop = this.addSimplePicMesh('../../../assets/icons/problem/stop.png', 20, 6.6, 23, -12, -32); stop.name = "stop";
+    let next = this.addSimplePicMesh('../../../assets/icons/problem/next.png', 9, 3.5, 18.5, 12, -15.5); next.name = "next";
+    let pre = this.addSimplePicMesh('../../../assets/icons/problem/pre.png', 9, 3.5, 18.5, 12, -12); pre.name = "pre";
+    this.runBtnGroup.push(stop, next, pre);
+    this.stopBtnGroup.push(run);
   }
 
   addTextBlock(text: string, canvasX: number, canvasY: number, x: number, z: number): Mesh {

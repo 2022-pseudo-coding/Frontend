@@ -23,6 +23,9 @@ export class ProblemComponent implements OnInit {
   description = "";
 
   inputList = new Array<string>();
+  originalInputList = new Array<string>();
+  originalStorageList = new Array<string>();
+
   storageList = new Array<string>();
   outputList = new Array<string>();
   expectedOutputList = new Array<string>();
@@ -30,15 +33,41 @@ export class ProblemComponent implements OnInit {
   insNameList = ["inbox", "outbox", "copyfrom", "copyto", "add", "sub", "bump+", "bump-", "jump", "jump_zero", "jump_neg"];
   statusList = new Array<Status>();
   statusIndex = 0;
-  currentStatus="no submit";
+  currentStatus = "no submit";
+  showHand = false;
+  hand = "";
+  step = 0;
+  line = 0;
 
   ngOnInit(): void {
     this.availableInsList = [];
-    this.getProblemInfo(this.stage,this.number);
+    this.getProblemInfo(this.stage, this.number);
     console.log(this.inputList);
     this.problemService.problemEventEmitter.subscribe((value: any) => {
       if (value.ins == "run") {
-        this.solve(this.stage,this.number, value.insList);
+        this.solve(this.stage, this.number, value.insList);
+        this.showHand = true;
+      }
+    });
+    this.problemService.problemEventEmitter.subscribe((value: any) => {
+      if (value.ins == "stop") {
+        this.currentStatus = "no submit";
+        this.showHand = false;
+      }
+      if (value.ins == "next") {
+        if(this.step+1<= this.statusList.length)
+        {
+          this.step++;
+          this.changeStatus(this.statusList[this.step-1]);
+        }
+      }
+      if(value.ins == "pre")
+      {
+        if(this.step-1>=1)
+        {
+          this.step--;
+          this.changeStatus(this.statusList[this.step-1]);
+        }
       }
     });
   }
@@ -65,12 +94,20 @@ export class ProblemComponent implements OnInit {
         let instruction = result.problem.instructions;
 
         this.inputList = input.split(";");
+        this.originalInputList = input.split(";");
+
         this.expectedOutputList = output.split(";");
+
         this.storageList = storage.split(";");
+        this.originalStorageList = storage.split(";");
 
         for (let i = 0; i < this.storageList.length; i++)this.storageList[i] = this.storageList[i + 1];
         this.storageList.pop();
-
+        console.log(this.storageList.length);
+        this.problemService.problemEventEmitter.emit({
+          ins: "limit",
+          limit: this.storageList.length,
+        });
         for (let i = 0; i < instruction.length; i++) {
           let insIndex = 0;
           switch (instruction[i].name) {
@@ -100,8 +137,31 @@ export class ProblemComponent implements OnInit {
       .subscribe(result => {
         this.statusList = result.statusList;
         this.currentStatus = result.message;
+        if (this.currentStatus.charAt(0) == "C")
+          this.currentStatus = "<--error-->"
+        else {
+          this.changeStatus(this.statusList[0]);
+          this.step = 1;
+          this.line = 0;
+        }
         console.log(result);
       });
+  }
+
+  changeStatus(status:Status):void
+  {
+    this.inputList = status.input;
+    this.outputList = status.output;
+    this.storageList = status.memory;
+    this.hand = status.hand;
+  }
+
+  refreshStatus():void
+  {
+    this.inputList = this.originalInputList;
+    this.outputList = new Array<string>();
+    this.storageList = this.originalStorageList;
+    this.hand = "";
   }
 }
 

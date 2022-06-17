@@ -82,7 +82,7 @@
   display: inline-block;
 }
 
-.storage_part {
+.storage_part,.hand ,.step,.line{
   display: inline-block;
   background-color: rgb(255, 255, 255);
   height: 17%;
@@ -92,6 +92,20 @@
   margin-top: 2.5%;
   text-align: center;
 }
+.line{
+  float:left;
+  margin-left: -25%;
+  margin-top: 23%;
+}
+.step{
+  float:left;
+  margin-left: -45%;
+}
+.hand{
+  float:left;
+  margin-left: -25%;
+}
+
 .storage_part_value {
   margin-top: 35%;
   font-size: 300%;
