@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ProblemService } from './problem.service';
 import { CommonModule } from '@angular/common';
 import { Inst, ProblemBackendService, Status } from '../../services/problem-backend.service';
@@ -15,8 +15,8 @@ export class ProblemComponent implements OnInit {
 
   constructor(private problemService: ProblemService, private problemBackendService: ProblemBackendService) { }
 
-  stage = "1";
-  number = "1";
+  @Input() stage = "1";
+  @Input() number = "1";
   ins = new Array<number>();
 
   title = "";

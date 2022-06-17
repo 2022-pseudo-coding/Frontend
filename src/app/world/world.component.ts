@@ -30,6 +30,9 @@ export class WorldComponent implements OnInit {
   isInProblem: boolean = false;
   canOpenDialog:boolean = true;
 
+  stage='1';
+  number='1';
+
   constructor(private router: Router,
     private authService: AuthService,
     private dataService: DataService,
@@ -103,6 +106,8 @@ export class WorldComponent implements OnInit {
         dialogRef.afterClosed().subscribe(result => {
           if (result === true) {
             this.isInProblem = true;
+            this.stage = splits[0];
+            this.number = splits[1];
           }else {
             this.canOpenDialog = true;
           }
