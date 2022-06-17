@@ -94,7 +94,7 @@ export class WorldComponent implements OnInit {
           hasSolutions: hasSolutions,
           message: hasSolutions ? 'ignored' : 'No one has solved this problem yet',
           solutions: solutions,
-          title: 'Problem ' + name
+          title: 'Problem ' + name + ' Players\' solutions'
         };
         const dialogRef = this.dialog.open(TableDialogComponent, {
           width: '500px',

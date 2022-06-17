@@ -6,6 +6,8 @@ import { DataService } from '../services/data.service';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogComponent } from '../dialog/dialog.component';
+import { TableData } from '../solution-table/solution-table.component';
+import { Solution } from '../services/problem-backend.service';
 
 
 @Component({
@@ -14,11 +16,11 @@ import { DialogComponent } from '../dialog/dialog.component';
   styleUrls: ['./user-center.component.css']
 })
 export class UserCenterComponent implements OnInit {
-  username: string = "123";
-  modelName: string = "blueBot";
+  username!: string;
+  modelName!: string;
   passwordHide: boolean = true;
-  //todo render solutions
-  solutions: any[] = [{}, {}, {}];
+  sourceList: TableData[] = [];
+  solutions: Solution[] = [];
 
   form: FormGroup;
   newPassword = new FormControl('', [Validators.required, Validators.minLength(6)]);
@@ -37,16 +39,11 @@ export class UserCenterComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    //todo
-    // this.getInfo();
-  }
-
-  getInfo(): void {
     if (!localStorage.getItem('token')) {
       this.router.navigate(['login']);
     } else {
       // refresh and may expire token
-      this.authService.center(localStorage.getItem('token')!)
+      this.authService.center()
         .pipe(catchError(err => {
           localStorage.clear();
           this.dataService.isLoggedIn.next(false);
@@ -56,6 +53,26 @@ export class UserCenterComponent implements OnInit {
           this.solutions = result.solutions;
           this.username = result.username;
           this.modelName = result.modelName;
+          this.solutions.forEach((solution, index) => {
+            let instructions = solution.instructions;
+            instructions.forEach((instruction, id)=>{
+              (instruction as any).id = id;
+              if(instruction.name.includes('jump')){
+                (instruction as any).info = 'jumpTo ' + instruction.jumpTo;
+              }else if (!instruction.name.includes('box')){
+                (instruction as any).info = 'referTo ' + instruction.referTo;
+              }else{
+                (instruction as any).info = '';
+              }
+            })
+            this.sourceList.push({
+              index:index,
+              name:solution.stage + '-' + solution.number,
+              steps:solution.steps,
+              numInst:solution.numInst,
+              instructions:instructions
+            })
+          })
         });
     }
   }
@@ -87,11 +104,9 @@ export class UserCenterComponent implements OnInit {
           }
         });
     }
-
   }
 
   openDialog(title: string, message: string): void {
-    console.log(title, message);
     const dialogRef = this.dialog.open(DialogComponent, {
       width: '300px',
       data: { title: title, message: message }

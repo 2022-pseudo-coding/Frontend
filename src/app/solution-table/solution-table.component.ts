@@ -1,28 +1,26 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { Inst } from '../services/problem-backend.service';
+import { Solution } from '../services/problem-backend.service';
 
-
-export interface Solution {
+export interface TableData {
+  index: number,
   name: string,
   steps: number,
   numInst: number,
-  insts: Inst[]
+  instructions: Inst[]
 }
-
-//todo
 
 @Component({
   selector: 'app-solution-table',
   templateUrl: './solution-table.component.html',
   styleUrls: ['./solution-table.component.css']
 })
-export class SolutionTableComponent implements OnInit {
+export class SolutionTableComponent {
 
-  @Input() solutions:Solution[] = [];
+  tableList: TableData[] = [];
+  @Input() sourceList!: TableData[];
+  cols: string[] = ['index', 'name', 'steps', 'numInst', 'instructions'];
 
   constructor() { }
-
-  ngOnInit(): void {
-  }
 
 }

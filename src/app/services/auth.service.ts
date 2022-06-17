@@ -40,6 +40,10 @@ interface MapProblemsResult {
   problems: any[]
 }
 
+interface AdminCenterResult{
+
+}
+
 
 @Injectable({
   providedIn: 'root'
@@ -49,18 +53,19 @@ export class AuthService {
   constructor(private http: HttpClient) { }
 
   login(username: string, password: string) {
-    return this.http.post<LoginResult>(baseUrl + '/login', { username, password, type: 'user' });
+    return this.http.post<LoginResult>(baseUrl + '/login', {
+      username,
+      password,
+      type: username === 'admin' ? 'admin' : 'user'
+    });
   }
 
   register(username: string, password: string, modelName: string) {
     return this.http.post<RegisterResult>(baseUrl + '/register', { username, password, modelName });
   }
 
-  refresh() {
-    return this.http.get(baseUrl + '/refresh');
-  }
-
-  center(token: string) {
+  center() {
+    let token: string = localStorage.getItem('token')!;
     return this.http.post<CenterResult>(baseUrl + '/center', { token });
   }
 
@@ -68,21 +73,25 @@ export class AuthService {
     return this.http.post<ChangeResult>(baseUrl + '/changePassword', { password, rePassword, token });
   }
 
-  mapSolved(mapId:string){
-    let token:string = localStorage.getItem('token')!;
+  mapSolved(mapId: string) {
+    let token: string = localStorage.getItem('token')!;
     let stage = this.mapIdToStage(mapId);
 
-    return this.http.post<MapSolvedResult>(baseUrl + '/mapSolved', {stage, token});
+    return this.http.post<MapSolvedResult>(baseUrl + '/mapSolved', { stage, token });
   }
 
-  mapProblems(mapId:string){
-    let token:string = localStorage.getItem('token')!;
+  mapProblems(mapId: string) {
+    let token: string = localStorage.getItem('token')!;
     let stage = this.mapIdToStage(mapId);
 
-    return this.http.post<MapProblemsResult>(baseUrl + '/mapProblems', {token, stage});
+    return this.http.post<MapProblemsResult>(baseUrl + '/mapProblems', { token, stage });
   }
 
-  userDefine(mapId:string, problem:any){
+  adminCenter(){
+    return this.http.get<AdminCenterResult>(baseUrl + '/admin/center');
+  }
+
+  userDefine(mapId: string, problem: any) {
     let token = localStorage.getItem('token')!;
     let input = problem.input.split('').join(';');
     let output = problem.output.split('').join(';');
@@ -98,8 +107,8 @@ export class AuthService {
     })
   }
 
-  private mapIdToStage(mapId:string): number{
-    switch(mapId){
+  private mapIdToStage(mapId: string): number {
+    switch (mapId) {
       case 'camp':
         return 1;
       case 'island':

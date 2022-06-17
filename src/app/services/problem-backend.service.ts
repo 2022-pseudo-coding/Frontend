@@ -27,7 +27,7 @@ export interface Inst {
   color: string,
   /* 初始状态下这两个值不用管，发送solve请求时需要指定这两个的值 */
   referTo: number,
-  jumpTo: number
+  jumpTo: number,
 }
 
 /* 每一步的状态 */
@@ -41,6 +41,8 @@ export interface Status {
 }
 
 export interface Solution {
+  stage:number,
+  number:number,
   steps: number,
   numInst: number,
   instructions: Inst[]

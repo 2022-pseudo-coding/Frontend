@@ -55,7 +55,7 @@ export class RendererWorldComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit() {
     this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: false });
 
-    this.renderer.setPixelRatio(window.devicePixelRatio * 0.9);
+    this.renderer.setPixelRatio(window.devicePixelRatio * 0.75);
     this.renderer.physicallyCorrectLights = true;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.shadowMap.enabled = true;
