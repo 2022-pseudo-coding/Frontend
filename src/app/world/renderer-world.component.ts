@@ -85,8 +85,6 @@ export class RendererWorldComponent implements AfterViewInit, OnDestroy {
     this.myPlayer = new Player(this.scene, this.keyPressed, this.camera, orbitControls, localStorage.getItem('username')!, this.world, this);
     this.worldMap = new WorldMap(this.scene, this.mapId, this.world, this.problems);
 
-    //todo delete debug
-    const debug = new (CannonDebugger as any)(this.scene.object, this.world as any);
 
     const clock = new THREE.Clock();
     let animationId: number;
@@ -107,8 +105,6 @@ export class RendererWorldComponent implements AfterViewInit, OnDestroy {
       Object.keys(this.otherPlayers).forEach(key => {
         this.otherPlayers[key].update(delta);
       });
-
-      debug.update();
 
       this.renderer.render(this.scene.object, this.camera);
 

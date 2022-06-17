@@ -46,11 +46,6 @@ export class WorldComponent implements OnInit {
     this.getProblems();
   }
 
-  debug(): void {
-    localStorage.setItem('username', 'mike');
-    localStorage.setItem('modelName', 'redBot');
-  }
-
   getProblems() {
     if (!localStorage.getItem('token')) {
       this.router.navigate(['login']);
