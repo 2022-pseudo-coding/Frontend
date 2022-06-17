@@ -175,7 +175,7 @@ export class RendererProblemComponent implements AfterViewInit {
 
       this.adjustAspect();
     });
-    window.addEventListener("click", event => {
+    this.canvas.addEventListener("click", event => {
       event.preventDefault();
       var raycaster = new THREE.Raycaster();
       var mouse = new THREE.Vector2();

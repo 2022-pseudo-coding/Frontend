@@ -105,6 +105,9 @@
   float:left;
   margin-left: -25%;
 }
+.line,.step,.hand{
+  display: block;
+}
 
 .storage_part_value {
   margin-top: 35%;

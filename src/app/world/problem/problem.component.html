@@ -30,10 +30,6 @@
       </div>
     </div>
     <div class="storage">
-      <div class="storage_part" *ngFor="let item of storageList let i = index">
-        <p class="storage_part_value">&nbsp;{{item}}&nbsp;</p>
-        <p class="storage_part_index">{{i}}</p>
-      </div>
       <div class="hand" *ngIf="showHand">
         <p class="storage_part_value">&nbsp;{{hand}}&nbsp;</p>
         <p class="storage_part_index">hand</p>
@@ -46,6 +42,11 @@
         <p class="storage_part_value">&nbsp;{{line}}&nbsp;</p>
         <p class="storage_part_index">line</p>
       </div>
+      <div class="storage_part" *ngFor="let item of storageList let i = index">
+        <p class="storage_part_value">&nbsp;{{item}}&nbsp;</p>
+        <p class="storage_part_index">{{i}}</p>
+      </div>
+
     </div>
     <div class="outbox">
       <div class="outbox_part">

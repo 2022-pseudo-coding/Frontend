@@ -55,6 +55,7 @@ export class ProblemComponent implements OnInit {
         this.showHand = false;
       }
       if (value.ins == "next") {
+        
         if(this.step+1<= this.statusList.length)
         {
           this.step++;
