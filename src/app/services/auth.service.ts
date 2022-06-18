@@ -96,12 +96,14 @@ export class AuthService {
     let token = localStorage.getItem('token')!;
     let input = problem.input.split('').join(';');
     let output = problem.output.split('').join(';');
-    let memory = problem.memory.split('').join(';');
     let instructions = problem.instructions.join(';');
     let worldInfo = problem.worldInfo.join(';') + ';0';
     let title = problem.title;
     let description = problem.description;
     let stage = this.mapIdToStage(mapId);
+
+    let temp = problem.memory.split('');
+    let memory = temp.length + ';' + temp.join(';');
 
     return this.http.post<UserDefineResult>(baseUrl + '/userDefine', {
       token, stage, title, description, input, output, instructions, memory, worldInfo
