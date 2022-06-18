@@ -102,7 +102,9 @@ export class RendererProblemComponent implements AfterViewInit {
             case 2:
             case 3:
             case 4:
-            case 5: limit = this.limit - 1; break;
+            case 5:
+            case 6:
+            case 7: limit = this.limit - 1; break;
             case 8:
             case 9:
             case 10: limit = 49; break;
@@ -121,7 +123,7 @@ export class RendererProblemComponent implements AfterViewInit {
       }
     });
     this.dragControls.addEventListener('dragstart', event => {
-      if(this.isRunning)return;
+      if (this.isRunning) return;
       let obj = event['object'];
       if (Math.abs(obj.position.x + 12) < 1 && Math.abs(Math.abs(obj.position.z % 10) - 5) < 1) {
         let insLineHeight = obj.position.z - obj.position.z % 10 + (obj.position.z > 0 ? 5 : -5);
@@ -234,7 +236,9 @@ export class RendererProblemComponent implements AfterViewInit {
               case 2:
               case 3:
               case 4:
-              case 5: referTo = this.insList[i][1]; break;
+              case 5:
+              case 6:
+              case 7: referTo = this.insList[i][1]; break;
               case 8:
               case 9:
               case 10: jumpTo = this.insList[i][1]; break;
@@ -262,7 +266,7 @@ export class RendererProblemComponent implements AfterViewInit {
             ins: "stop"
           });
         }
-        if (name == "next"||name=="pre") {
+        if (name == "next" || name == "pre") {
           this.problemService.problemEventEmitter.emit({
             ins: name
           });
@@ -320,7 +324,7 @@ export class RendererProblemComponent implements AfterViewInit {
   }
 
   addIns(index: number): void {
-    if(this.isRunning)return;
+    if (this.isRunning) return;
     let picpath = "../../../assets/icons/problem/ins_";
     switch (index) {
       case 0: picpath += "inbox"; break;
