@@ -13,34 +13,19 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { NavComponent } from './nav/nav.component';
-import { WorldComponent } from './world/world.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { DialogComponent } from './dialog/dialog.component';
 import { AuthInterceptor } from './services/auth.interceptor';
 import { DataService } from './services/data.service';
-import { RendererWorldComponent } from './world/renderer-world.component';
-import { RendererProblemComponent } from './world/problem/renderer-problem.component';
-import { AbstractObjectDirective } from './world/basics/abstract-object.directive';
-import { SceneDirective } from './world/basics/scene.directive';
-import { ProblemComponent } from './world/problem/problem.component';
-import { LightDirective } from './world/basics/light.directive';
-import { BallDirective } from './world/mesh/ball.directive';
-import { GroundDirective } from './world/mesh/ground.directive';
-import { FloorDirective } from './world/mesh/floor.directive';
-import { SocketIoConfig, SocketIoModule } from 'ngx-socket-io';
 import { environment } from 'src/environments/environment';
-import { PlayerService } from './services/player.service';
-import { InstructionDirective } from './world/mesh/instruction.directive';
 import { ProblemBackendService } from './services/problem-backend.service';
 import { UserCenterComponent } from './user-center/user-center.component';
-import { ChatComponent } from './chat/chat.component';
 import { CraftComponent } from './craft/craft.component';
 import { SolutionTableComponent } from './solution-table/solution-table.component';
 import { ManualComponent } from './manual/manual.component';
 import { TableDialogComponent } from './table-dialog/table-dialog.component';
 import { AdminComponent } from './admin/admin.component';
 
-const config: SocketIoConfig = { url: environment.SOCKET_URL, options: { autoConnect: false } };
 
 @NgModule({
   declarations: [
@@ -48,21 +33,9 @@ const config: SocketIoConfig = { url: environment.SOCKET_URL, options: { autoCon
     LoginComponent,
     RegisterComponent,
     NavComponent,
-    WorldComponent,
     PageNotFoundComponent,
     DialogComponent,
-    RendererWorldComponent,
-    RendererProblemComponent,
-    AbstractObjectDirective,
-    SceneDirective,
-    ProblemComponent,
-    LightDirective,
-    BallDirective,
-    GroundDirective,
-    InstructionDirective,
-    FloorDirective,
     UserCenterComponent,
-    ChatComponent,
     CraftComponent,
     SolutionTableComponent,
     ManualComponent,
@@ -78,14 +51,13 @@ const config: SocketIoConfig = { url: environment.SOCKET_URL, options: { autoCon
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
-    NgChartsModule,
-    SocketIoModule.forRoot(config)
+    NgChartsModule
   ],
   providers: [{
     provide: HTTP_INTERCEPTORS,
     useClass: AuthInterceptor,
     multi: true
-  }, DataService, PlayerService, ProblemBackendService
+  }, DataService, ProblemBackendService
   ],
   bootstrap: [AppComponent]
 })

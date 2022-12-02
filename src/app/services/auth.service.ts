@@ -61,8 +61,8 @@ export class AuthService {
     });
   }
 
-  register(username: string, password: string, modelName: string) {
-    return this.http.post<RegisterResult>(baseUrl + '/register', { username, password, modelName });
+  register(username: string, password: string) {
+    return this.http.post<RegisterResult>(baseUrl + '/register', { username, password });
   }
 
   center() {

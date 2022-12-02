@@ -1,5 +1,4 @@
 import { Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { PlayerService } from '../services/player.service';
 import { Input } from '@angular/core';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -32,7 +31,6 @@ export class CraftComponent implements OnChanges {
     private authService: AuthService,
     private formBuilder: FormBuilder,
     private dialog: MatDialog,
-    private playerService: PlayerService
   ) {
     this.form = this.formBuilder.group({
       title: this.title,
@@ -85,7 +83,6 @@ export class CraftComponent implements OnChanges {
             inst.checked = false;
           }
         }
-        this.playerService.myCreate(result.name, this.position);
       });
     }
   }

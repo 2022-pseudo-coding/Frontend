@@ -19,7 +19,6 @@ export class RegisterComponent implements OnInit {
   username = new FormControl('', [Validators.required, Validators.minLength(4)]);
   password = new FormControl('', [Validators.required, Validators.minLength(6)]);
   confirm = new FormControl('', [Validators.required]);
-  modelName = new FormControl('blueBot');
   form: FormGroup;
   errorStateMatcher = new ConfirmValidParentMatcher();
 
@@ -29,7 +28,6 @@ export class RegisterComponent implements OnInit {
     private router: Router) {
     this.form = this.formBuilder.group({
       username: this.username,
-      modelName: this.modelName,
       passwordGroup: this.formBuilder.group({
         password: this.password,
         confirm: this.confirm
@@ -77,7 +75,7 @@ export class RegisterComponent implements OnInit {
   onSubmit(): void {
     if (this.form.valid) {
       // POST
-      this.authService.register(this.username.value, this.password.value, this.modelName.value)
+      this.authService.register(this.username.value, this.password.value,)
         .pipe(catchError((error: HttpErrorResponse) => {
           this.openDialog('Whoops!', 'Something unexpected happened. Check your network connectivity');
           return throwError(() => new Error('Something bad happened!'))
