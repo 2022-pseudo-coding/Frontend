@@ -7,6 +7,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { NgxGraphModule } from '@swimlane/ngx-graph';
 
 /* Project Components */
 import { AppComponent } from './app.component';
@@ -25,6 +26,7 @@ import { SolutionTableComponent } from './solution-table/solution-table.componen
 import { ManualComponent } from './manual/manual.component';
 import { TableDialogComponent } from './table-dialog/table-dialog.component';
 import { AdminComponent } from './admin/admin.component';
+import { CodingComponent } from './coding/coding.component';
 
 
 @NgModule({
@@ -38,6 +40,7 @@ import { AdminComponent } from './admin/admin.component';
     UserCenterComponent,
     CraftComponent,
     SolutionTableComponent,
+    CodingComponent,
     ManualComponent,
     TableDialogComponent,
     AdminComponent,
@@ -51,7 +54,8 @@ import { AdminComponent } from './admin/admin.component';
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
-    NgChartsModule
+    NgChartsModule,
+    NgxGraphModule,
   ],
   providers: [{
     provide: HTTP_INTERCEPTORS,

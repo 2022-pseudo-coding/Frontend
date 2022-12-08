@@ -1,0 +1,38 @@
+<div class="wrapper">
+    <div class="left-wrapper">
+
+    </div>
+    <div class="right-wrapper">
+        <div class="right-upper-wrapper">
+            <ngx-graph [view]="windowSize" [showMiniMap]="true" [links]="links" [nodes]="nodes"
+            [animate]="true" [curve]="curve" [draggingEnabled]="false">
+            <ng-template #nodeTemplate let-node>
+                <svg:g class="node" (click)="select(node.id)">
+                  <svg:rect [attr.width]="node.dimension.width" [attr.height]="node.dimension.height" [attr.fill]="node.data.color" />
+                  <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.dimension.height / 2">{{node.label}}</svg:text>
+                </svg:g>
+              </ng-template>
+      
+              <ng-template #linkTemplate let-link>
+                <svg:g class="edge">
+                  <svg:path class="line" stroke-width="2" marker-end="url(#arrow)">
+                  </svg:path>
+                  <svg:text class="edge-label" text-anchor="middle">
+                    <textPath class="text-path" [attr.href]="'#' + link.id" [style.dominant-baseline]="link.dominantBaseline" startOffset="50%">
+                      {{link.label + "->"}}
+                    </textPath>
+                  </svg:text>
+                </svg:g>
+              </ng-template>
+            </ngx-graph>
+        </div>
+        <div class="right-lower-wrapper">
+            <div class="control-panel">
+
+            </div>
+            <div class="memory-bank">
+
+            </div>
+        </div>
+    </div>
+</div>

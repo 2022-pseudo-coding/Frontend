@@ -33,6 +33,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatStepperModule } from '@angular/material/stepper';
 
 const materialModules = [
   CdkTreeModule,
@@ -47,6 +48,7 @@ const materialModules = [
   MatInputModule,
   MatListModule,
   MatMenuModule,
+  MatStepperModule,
   MatProgressSpinnerModule,
   MatPaginatorModule,
   MatRippleModule,

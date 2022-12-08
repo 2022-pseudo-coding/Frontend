@@ -1,0 +1,44 @@
+.wrapper {
+    height: 100%;
+    width: 100%;
+}
+
+.left-wrapper {
+    height: 90%;
+    width: 20%;
+    float: left;
+    margin-left: 5%;
+    margin-top: 5%;
+    background-color: red
+}
+
+.right-wrapper {
+    height: 90%;
+    width: 65%;
+    margin-left: 5%;
+    margin-top: 5%;
+    float: left;
+}
+
+.right-upper-wrapper {
+    height: 70%;
+    background-color: aqua;
+}
+
+.right-lower-wrapper {
+    height: 30%;
+}
+
+.control-panel {
+    float: left;
+    height: 100%;
+    width: 30%;
+    background-color: blue;
+}
+
+.memory-bank {
+    float: left;
+    height: 100%;
+    width: 70%;
+    background-color: darkolivegreen;
+}
