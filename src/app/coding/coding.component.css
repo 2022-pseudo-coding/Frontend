@@ -9,7 +9,6 @@
     float: left;
     margin-left: 5%;
     margin-top: 5%;
-    background-color: red
 }
 
 .right-wrapper {
@@ -21,8 +20,8 @@
 }
 
 .right-upper-wrapper {
-    height: 70%;
-    background-color: aqua;
+    height: 65%;
+    margin-bottom: 2%;
 }
 
 .right-lower-wrapper {
@@ -32,13 +31,39 @@
 .control-panel {
     float: left;
     height: 100%;
-    width: 30%;
-    background-color: blue;
+    width: 31%;
 }
 
 .memory-bank {
     float: left;
     height: 100%;
-    width: 70%;
-    background-color: darkolivegreen;
+    width: 65%;
+    margin-left: 3%;
+}
+
+.left-upper-wrapper {
+    height: 25%;
+
+}
+
+.left-lower-wrapper {
+    height: 70%;
+    margin-top: 2%;
+}
+
+.inner {
+    margin: 5%;
+}
+
+.inst-btn{
+    display: block;
+}
+
+.del-btn {
+    float: right
+}
+
+.border {
+    border: 2px dashed rgb(135, 7, 96);
+    border-radius: 5px;
 }
