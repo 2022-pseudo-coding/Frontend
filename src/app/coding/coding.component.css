@@ -67,3 +67,14 @@
     border: 2px dashed rgb(135, 7, 96);
     border-radius: 5px;
 }
+
+.mem-item{
+    font-size: large;
+    width: 20%;
+
+}
+
+.control-btn {
+    width: 30%;
+    margin-left: 10%;
+}

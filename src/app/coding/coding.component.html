@@ -19,10 +19,19 @@
     <div class="right-upper-wrapper border">
       <ngx-graph [view]="windowSize" [showMiniMap]="true" [links]="links" [nodes]="nodes" [animate]="true"
         [curve]="curve" [draggingEnabled]="false" class="inner" [update$]="update$" [center$]="center$">
+        <ng-template #defsTemplate>
+          <svg:marker id="arrow" viewBox="0 -5 10 10" refX="8" refY="0" markerWidth="4" markerHeight="4" orient="auto">
+            <svg:path d="M0,-5L10,0L0,5" class="arrow-head" />
+          </svg:marker>
+        </ng-template>
+
         <ng-template #nodeTemplate let-node>
-          <svg:g class="node" (click)="select(node.id)">
+          <svg:g (click)="select(node)">
+            <rect [attr.width]="node.dimension.width" [attr.height]="node.dimension.height" stroke="plum"
+              stroke-width="6" fill="None" rx="5" *ngIf="node.isSelected" />
+
             <svg:rect [attr.width]="node.dimension.width" [attr.height]="node.dimension.height"
-              [style]="'fill: '+ node.color" rx="5"/>
+              [style]="'fill: '+ node.color" rx="5" />
             <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.dimension.height / 2"
               style="fill:azure">{{node.label}}</svg:text>
           </svg:g>
@@ -35,7 +44,7 @@
             <svg:text class="edge-label" text-anchor="middle">
               <textPath class="text-path" [attr.href]="'#' + link.id" [style.dominant-baseline]="link.dominantBaseline"
                 startOffset="50%">
-                {{link.label + " ->"}}
+                {{link.label}}
               </textPath>
             </svg:text>
           </svg:g>
@@ -44,10 +53,25 @@
     </div>
     <div class="right-lower-wrapper">
       <div class="control-panel border">
-
+        <div style="margin-left: 7%; margin-top: 7%;">
+          <h1 class="inner">Control Panel</h1>
+            <button mat-flat-button class="inner control-btn" color="primary" (click)="submit()">Submit</button>
+            <button [disabled]="!hasSubmitted" mat-flat-button class="inner control-btn" color="primary" (click)="nextStep()">Next Step</button>
+            <button [disabled]="!hasSubmitted" mat-flat-button class="inner control-btn" color="primary" (click)="play()">Play</button>
+            <button [disabled]="!hasSubmitted" mat-flat-button class="inner control-btn" color="primary" (click)="prevStep()">Prev Step</button>
+        </div>
       </div>
       <div class="memory-bank border">
-
+        <h1 class="inner">Memory Bank</h1>
+        <div class="inner">
+          <mat-chip-list>
+            <mat-chip *ngFor="let mem of memory; let i=index" class="mem-item" style="margin-left: 3%;"
+              (click)="selectMemory(i)">
+              <span>{{i}}: </span>
+              <span style="width: 100%;text-align:center">{{mem}}</span>
+            </mat-chip>
+          </mat-chip-list>
+        </div>
       </div>
     </div>
   </div>
