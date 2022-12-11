@@ -1,14 +1,21 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import * as shape from 'd3-shape';
 import { Subject } from 'rxjs';
-import { Inst, Problem } from '../services/problem-backend.service'
+import { catchError, EMPTY } from 'rxjs';
+import { DataService } from '../services/data.service';
+import { Inst, Problem, ProblemBackendService, Status } from '../services/problem-backend.service'
 import { canRefer, canJump, nodeToInst } from './utils'
+import { DialogComponent } from '../dialog/dialog.component';
 
 export interface Node {
   color: string,
   id: string,
   label: string,
-  isSelected: boolean
+  isSelected: boolean,
+  /** for playing */
+  isActive: boolean
 }
 
 export interface Edge {
@@ -26,58 +33,34 @@ export class CodingComponent implements OnInit {
   /*
    * graph chart config
   */
-  windowSize: [number, number] = [window.innerWidth * 0.65, window.innerHeight * 0.56];
+  windowSize: [number, number] = [window.innerWidth * 0.65, window.innerHeight * 0.46];
   curve = shape.curveNatural;
 
   /*
     * control panel
   */
-  hasSubmitted: boolean = false
+  hasSubmitted: boolean = false;
+  state: string = 'unsubmitted'
+  statusList: Status[] = [];
+  statusPtr: number = -1;
 
   /*
-    * memory bank
+    * all the lists
   */
-  memory: number[] = Array(12).fill(0);
+  memory: string[] = [];
+  inputs: string[] = [];
+  outputs: string[] = [];
+  truths: string[] = [];
+  hand: string = 'Nothing';
 
   /*
     * inst & prob
   */
   userInsts: Inst[] = [];
   selectedNode?: Node;
-  prob: Problem = {
-    title: 'title',
-    description: 'description',
-    input: '3;8;1',
-    output: '3;8;1',
-    memory: '12;-;-;-;-;-;-;-;-;-;0;10;100',
-    instructions: [
-      {
-        name: 'inbox',
-        color: 'green',
-        referTo: -1,
-        jumpTo: -1
-      },
-      {
-        name: 'copyfrom',
-        color: 'red',
-        referTo: -1,
-        jumpTo: -1
-      },
-      {
-        name: 'add',
-        color: 'orange',
-        referTo: -1,
-        jumpTo: -1
-      },
-      {
-        name: 'jump',
-        color: 'blue',
-        referTo: -1,
-        jumpTo: -1
-      },
-    ],
-    solutions: []
-  };
+  prob!: Problem;
+  stage = '1';
+  numberInStage = '2';
 
   /*
     * graph data
@@ -89,35 +72,121 @@ export class CodingComponent implements OnInit {
   update$: Subject<boolean> = new Subject();
   center$: Subject<boolean> = new Subject();
 
-  constructor() {
+  constructor(private problemService: ProblemBackendService,
+    private router: Router,
+    private dataService: DataService,
+    private dialog: MatDialog) {
 
   }
 
   ngOnInit(): void {
-
+    this.problemService.getProblem(this.stage, this.numberInStage).pipe(catchError(err => {
+      localStorage.clear();
+      this.dataService.isLoggedIn.next(false);
+      this.router.navigate(['login']);
+      return EMPTY;
+    })).subscribe(result => {
+      this.prob = result.problem;
+      this.inputs = result.problem.input.split(';');
+      this.truths = result.problem.output.split(';');
+      this.memory = result.problem.memory.split(';');
+    });
   }
 
-  // todo control panel
   submit(): void {
-    console.log(this.userInsts);
+    for (let inst of this.userInsts) {
+      if (canJump(inst) && inst.jumpTo < 0) {
+        this.dialog.open(DialogComponent, {
+          width: '300px',
+          data: { title: 'Error', message: inst.name + ' must point to a target instruction' }
+        });
+        return;
+      } else if (canRefer(inst) && inst.referTo < 0) {
+        this.dialog.open(DialogComponent, {
+          width: '300px',
+          data: { title: 'Error', message: inst.name + ' must point to a memory location' }
+        });
+        return;
+      }
+    }
+    console.log(this.userInsts)
+    this.problemService.sendSolution(this.stage, this.numberInStage, this.userInsts).pipe(catchError(err => {
+      localStorage.clear();
+      this.dataService.isLoggedIn.next(false);
+      this.router.navigate(['login']);
+      return EMPTY;
+    })).subscribe(result => {
+      this.state = result.message;
+      this.statusList = result.statusList;
+      this.hasSubmitted = true;
+      console.log(result.statusList);
+    });
   }
 
   play(): void {
+    //todo animate
+    this.refresh();
+    let timer = setInterval(() => {
+      if(this.statusPtr !== this.statusList.length - 2){
+        this.nextStep();
+      }else{
+        clearInterval(timer);
+      }
+      
+    }, 500);
 
+  }
+
+  private updateFromStatus(status: Status): void {
+    this.hand = status.hand ? status.hand : this.hand;
+    this.nodes.forEach((node, index) => {
+      if (index === status.instIndex) {
+        node.isActive = true;
+      } else {
+        node.isActive = false;
+      }
+    });
+    this.outputs = status.output;
+    this.inputs = status.input;
+    this.memory.forEach((el, index) => {
+      if (status.memory[index]) {
+        this.memory[index] = status.memory[index]
+      }
+    })
   }
 
   nextStep(): void {
-
+    if (this.statusPtr <= this.statusList.length - 3) {
+      this.statusPtr++;
+      this.updateFromStatus(this.statusList[this.statusPtr])
+    }
   }
 
   prevStep(): void {
+    if (this.statusPtr >= 1) {
+      this.statusPtr--;
+      this.updateFromStatus(this.statusList[this.statusPtr])
+    } else {
+      this.refresh();
+    }
+  }
 
+  refresh(): void {
+    this.inputs = this.prob.input.split(';');
+    this.truths = this.prob.output.split(';');
+    this.memory = this.prob.memory.split(';');
+    this.hand = 'Nothing';
+    this.outputs = [];
+    this.nodes.forEach((el, index) => {
+      el.isActive = false
+    });
+    this.statusPtr = -1;
   }
 
   select(node: Node): void {
     // handle jump
     if (this.selectedNode) {
-      if(node === this.selectedNode){
+      if (node === this.selectedNode) {
         return;
       }
       let sourceInst = nodeToInst(this.userInsts, this.selectedNode);
@@ -172,16 +241,17 @@ export class CodingComponent implements OnInit {
     let cnt = this.userInsts.length;
     let curr = cnt.toString();
     this.userInsts.push({
-       name: inst.name,
-       color: inst.color,
-       referTo: inst.referTo,
-       jumpTo: inst.jumpTo
+      name: inst.name,
+      color: inst.color,
+      referTo: inst.referTo,
+      jumpTo: inst.jumpTo
     });
     this.nodes.push({
       id: curr,
       label: inst.name,
       color: inst.color,
-      isSelected: false
+      isSelected: false,
+      isActive: false
     });
     if (cnt > 0) {
       let prev = (cnt - 1).toString();

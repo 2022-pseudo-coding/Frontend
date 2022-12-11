@@ -37,7 +37,8 @@ export interface Status {
   output: string[],
   memory: string[],
   /* 表示手上的东西 */
-  hand: string
+  hand: string,
+  instIndex: number
 }
 
 export interface Solution {
@@ -79,4 +80,6 @@ export class ProblemBackendService {
       stage, number, token, instructions
     })
   }
+
+  
 }

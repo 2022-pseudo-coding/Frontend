@@ -20,24 +20,24 @@
 }
 
 .right-upper-wrapper {
-    height: 65%;
+    height: 53%;
     margin-bottom: 2%;
 }
 
 .right-lower-wrapper {
-    height: 30%;
+    height: 42%;
 }
 
 .control-panel {
     float: left;
     height: 100%;
-    width: 31%;
+    width: 25%;
 }
 
 .memory-bank {
     float: left;
     height: 100%;
-    width: 65%;
+    width: 71%;
     margin-left: 3%;
 }
 
@@ -55,7 +55,7 @@
     margin: 5%;
 }
 
-.inst-btn{
+.inst-btn {
     display: block;
 }
 
@@ -68,13 +68,25 @@
     border-radius: 5px;
 }
 
-.mem-item{
+mat-chip {
     font-size: large;
-    width: 20%;
+}
 
+.mem-item {
+    width: 7%;
 }
 
 .control-btn {
     width: 30%;
-    margin-left: 10%;
+    margin: 6%;
+    display: block;
+}
+
+.item-wrapper {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    white-space: nowrap;
+    width: 96%;
+    margin-left: 2%;
+    margin-top: 1.5%;
 }

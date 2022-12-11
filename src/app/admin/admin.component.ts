@@ -18,14 +18,22 @@ export class AdminComponent implements OnInit {
   labels: string[] = ['average', 'max', 'min'];
   options: ChartOptions = {
     responsive: true,
+    color: 'white',
     plugins: {
       legend: {
-        position: 'right'
+        position: 'right',
+      },
+    }, 
+    scales: {
+      x: {
+        ticks: {color: 'white'}
+      },
+      y: {
+        ticks: {color: 'white'}
       }
     }
-    
   };
-  statMap:any={};
+  statMap: any = {};
 
   constructor(private authService: AuthService,
     private dataService: DataService,
@@ -35,38 +43,38 @@ export class AdminComponent implements OnInit {
 
   ngOnInit(): void {
     this.authService.adminCenter()
-    .pipe(catchError((error: HttpErrorResponse) => {
-      localStorage.clear();
-      this.dataService.isLoggedIn.next(false);
-      this.router.navigate(['login']);
-      return EMPTY;
-    })).subscribe(result => {
-      let solutionMap = result.solutionMap;
-      Object.keys(solutionMap).forEach((el) => {
-        this.stageList[Number(el[0]) - 1].push(solutionMap[el]);
-      });
-      this.stageList.forEach((stage: any, stageIndex: number) => {
-        stage.forEach((problem: any, index: number) => {
-          let problemIndex = (stageIndex + 1) + '-' + (index + 1);
-          ((stage as [])[index] as any) = {
-            index: problemIndex,
-          }
-          this.statMap[problemIndex] = [
-            { label: 'steps', data: this.getProblemData(problem.map((el:any)=>el.steps))},
-            { label: 'num_inst', data: this.getProblemData(problem.map((el:any)=>el.numInst))}
-          ]
+      .pipe(catchError((error: HttpErrorResponse) => {
+        localStorage.clear();
+        this.dataService.isLoggedIn.next(false);
+        this.router.navigate(['login']);
+        return EMPTY;
+      })).subscribe(result => {
+        let solutionMap = result.solutionMap;
+        Object.keys(solutionMap).forEach((el) => {
+          this.stageList[Number(el[0]) - 1].push(solutionMap[el]);
+        });
+        this.stageList.forEach((stage: any, stageIndex: number) => {
+          stage.forEach((problem: any, index: number) => {
+            let problemIndex = (stageIndex + 1) + '-' + (index + 1);
+            ((stage as [])[index] as any) = {
+              index: problemIndex,
+            }
+            this.statMap[problemIndex] = [
+              { label: 'steps', data: this.getProblemData(problem.map((el: any) => el.steps)) },
+              { label: 'num_inst', data: this.getProblemData(problem.map((el: any) => el.numInst)) }
+            ]
+          })
         })
-      })
 
-    });
+      });
   }
 
-  getProblemData(data:any){
-    if(data.length === 0){
-      return [0,0,0];
+  getProblemData(data: any) {
+    if (data.length === 0) {
+      return [0, 0, 0];
     }
     let total = 0;
-    for(let temp of data){
+    for (let temp of data) {
       total += temp;
     }
     return [total / data.length, Math.max(...data), Math.min(...data)];

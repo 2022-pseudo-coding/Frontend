@@ -9,12 +9,12 @@ import { CodingComponent } from './coding/coding.component';
 
 
 const routes: Routes = [
-  {
-    path: 'world', children: [
-      { path: '**', component: PageNotFoundComponent }
-    ]
-  },
-  { path: '', redirectTo: '/coding', pathMatch: 'full' },
+  { path: '', redirectTo: '/center', pathMatch: 'full' },
+
+  // todo
+  // { path: 'projects', component: },
+  // { path: 'problems', component: },
+
   { path: 'coding', component: CodingComponent },
   { path: 'center', component: UserCenterComponent },
   { path: 'login', component: LoginComponent },

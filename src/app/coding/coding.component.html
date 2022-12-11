@@ -29,7 +29,8 @@
           <svg:g (click)="select(node)">
             <rect [attr.width]="node.dimension.width" [attr.height]="node.dimension.height" stroke="plum"
               stroke-width="6" fill="None" rx="5" *ngIf="node.isSelected" />
-
+            <rect [attr.width]="node.dimension.width" [attr.height]="node.dimension.height" stroke="coral"
+              stroke-width="6" fill="None" rx="5" *ngIf="node.isActive" />
             <svg:rect [attr.width]="node.dimension.width" [attr.height]="node.dimension.height"
               [style]="'fill: '+ node.color" rx="5" />
             <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.dimension.height / 2"
@@ -53,25 +54,61 @@
     </div>
     <div class="right-lower-wrapper">
       <div class="control-panel border">
-        <div style="margin-left: 7%; margin-top: 7%;">
-          <h1 class="inner">Control Panel</h1>
-            <button mat-flat-button class="inner control-btn" color="primary" (click)="submit()">Submit</button>
-            <button [disabled]="!hasSubmitted" mat-flat-button class="inner control-btn" color="primary" (click)="nextStep()">Next Step</button>
-            <button [disabled]="!hasSubmitted" mat-flat-button class="inner control-btn" color="primary" (click)="play()">Play</button>
-            <button [disabled]="!hasSubmitted" mat-flat-button class="inner control-btn" color="primary" (click)="prevStep()">Prev Step</button>
-        </div>
+        <h1 class="inner">Control Panel -- {{state}}</h1>
+        <button mat-flat-button class="inner control-btn" color="primary" (click)="submit()">Submit</button>
+        <button [disabled]="!hasSubmitted" mat-flat-button class="inner control-btn" color="warning" (click)="play()">Play</button>
+        <button [disabled]="!hasSubmitted" mat-flat-button class="inner control-btn" color="warning" (click)="nextStep()">Next Step</button>
+        <button [disabled]="!hasSubmitted" mat-flat-button class="inner control-btn" color="warning" (click)="prevStep()">Prev Step</button>
+        <button [disabled]="!hasSubmitted" mat-flat-button class="inner control-btn" color="accent" (click)="refresh()">Refresh</button>
       </div>
       <div class="memory-bank border">
-        <h1 class="inner">Memory Bank</h1>
-        <div class="inner">
+        <h1 style="margin:2%">Information</h1>
+        <div style="margin-top: 2%;margin-left:3%">
           <mat-chip-list>
-            <mat-chip *ngFor="let mem of memory; let i=index" class="mem-item" style="margin-left: 3%;"
+            <mat-chip>Current Value</mat-chip>
+            <mat-chip style="margin-left:2%;">{{hand}}</mat-chip>
+          </mat-chip-list>
+        </div>
+
+        <div style="margin-top: 2%;margin-left: 3%;">
+          <mat-chip-list>
+            <mat-chip>Memory Bank</mat-chip>
+            <mat-chip *ngFor="let mem of memory; let i=index" class="mem-item" style="margin-left: 1%;"
               (click)="selectMemory(i)">
               <span>{{i}}: </span>
               <span style="width: 100%;text-align:center">{{mem}}</span>
             </mat-chip>
           </mat-chip-list>
         </div>
+
+        <mat-chip-list>
+          <div class="item-wrapper">
+            <mat-chip style="margin-left: 2%;width: 9%;justify-content: center;">Inputs</mat-chip>
+            <mat-chip *ngFor="let mem of inputs; let i=index" style="margin-left: 2%; flex: 0 0 auto;"
+              (click)="selectMemory(i)">
+              {{mem}}
+            </mat-chip>
+          </div>
+        </mat-chip-list>
+
+        <mat-chip-list>
+          <div class="item-wrapper">
+            <mat-chip style="margin-left: 2%;width: 9%;justify-content: center;">Truths</mat-chip>
+            <mat-chip *ngFor="let mem of truths; let i=index" style="margin-left: 2%;" (click)="selectMemory(i)">
+              {{mem}}
+            </mat-chip>
+          </div>
+        </mat-chip-list>
+
+        <mat-chip-list>
+          <div class="item-wrapper">
+            <mat-chip style="margin-left: 2%;width: 9%;justify-content: center;">Outputs</mat-chip>
+            <mat-chip *ngFor="let mem of outputs; let i=index" style="margin-left: 2%;" (click)="selectMemory(i)">
+              {{mem}}
+            </mat-chip>
+          </div>
+        </mat-chip-list>
+
       </div>
     </div>
   </div>

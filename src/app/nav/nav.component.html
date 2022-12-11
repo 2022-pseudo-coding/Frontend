@@ -9,9 +9,14 @@
       <span>Login</span>
     </button>
 
-    <button mat-menu-item *ngIf="isLoggedIn && username!=='admin'" [matMenuTriggerFor]="maps">
-      <mat-icon>map</mat-icon>
-      <span>maps</span>
+    <!-- todo -->
+    <button mat-menu-item *ngIf="isLoggedIn  && username!=='admin'" routerLink="problems" routerLinkActive="active" >
+      <mat-icon>code</mat-icon>
+      <span>Coding</span>
+    </button>
+    <button mat-menu-item *ngIf="isLoggedIn  && username!=='admin'" routerLink="projects" routerLinkActive="active" >
+      <mat-icon>book</mat-icon>
+      <span>Projects</span>
     </button>
     <button mat-menu-item *ngIf="isLoggedIn  && username!=='admin'" routerLink="center" routerLinkActive="active" >
       <mat-icon>account_circle</mat-icon>
@@ -20,20 +25,6 @@
     <button mat-menu-item *ngIf="isLoggedIn" (click)="logout()">
       <mat-icon>logout</mat-icon>
       <span>Logout</span>
-    </button>
-  </mat-menu>
-  <mat-menu #maps="matMenu" id="mapMenu">
-    <button mat-menu-item [routerLink]="['/world/camp']" routerLinkActive="active">
-      <span style="padding-right: 20px">Camp</span>
-      <mat-icon *ngIf="mapId === 'camp'">check</mat-icon>
-    </button>
-    <button mat-menu-item [routerLink]="['/world/island']" routerLinkActive="active">
-      <span style="padding-right: 20px">Island</span>
-      <mat-icon *ngIf="mapId === 'island'">check</mat-icon>
-    </button>
-    <button mat-menu-item [routerLink]="['/world/forest']" routerLinkActive="active">
-      <span style="padding-right: 20px">Forest</span>
-      <mat-icon *ngIf="mapId === 'forest'">check</mat-icon>
     </button>
   </mat-menu>
   <span class="spacer">2022 Pseudo Coding</span>

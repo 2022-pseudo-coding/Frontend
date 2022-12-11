@@ -4,7 +4,6 @@
 
 export const environment = {
   production: false,
-  SOCKET_URL: 'http://localhost:9090',
   API_URL: 'http://localhost:8080'
 };
 
