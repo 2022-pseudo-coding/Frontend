@@ -55,7 +55,7 @@
       <div class="right-lower-wrapper">
         <div class="control-panel border">
           <h1 class="inner">Control Panel -- {{state}}</h1>
-          <button mat-flat-button class="inner control-btn" color="primary" (click)="submit()">Submit</button>
+          <button mat-flat-button class="inner control-btn" color="primary" (click)="update()">Update</button>
           <button [disabled]="!hasSubmitted" mat-flat-button class="inner control-btn" color="warning" (click)="play()">Play</button>
           <button [disabled]="!hasSubmitted" mat-flat-button class="inner control-btn" color="warning" (click)="nextStep()">Next Step</button>
           <button [disabled]="!hasSubmitted" mat-flat-button class="inner control-btn" color="warning" (click)="prevStep()">Prev Step</button>
@@ -86,15 +86,6 @@
               <mat-chip style="margin-left: 2%;width: 9%;justify-content: center;">Inputs</mat-chip>
               <mat-chip *ngFor="let mem of inputs; let i=index" style="margin-left: 2%; flex: 0 0 auto;"
                 (click)="selectMemory(i)">
-                {{mem}}
-              </mat-chip>
-            </div>
-          </mat-chip-list>
-  
-          <mat-chip-list>
-            <div class="item-wrapper">
-              <mat-chip style="margin-left: 2%;width: 9%;justify-content: center;">Truths</mat-chip>
-              <mat-chip *ngFor="let mem of truths; let i=index" style="margin-left: 2%;" (click)="selectMemory(i)">
                 {{mem}}
               </mat-chip>
             </div>

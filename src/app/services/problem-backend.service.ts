@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
+import { Action } from './mod-proj.service';
 
 const baseUrl: string = environment.API_URL;
 
@@ -21,7 +22,7 @@ export interface Problem {
   solutions: Solution[]
 }
 
-export interface Inst {
+export interface Inst extends Action{
   name: string,
   /* color可以不管，如果要用的话可取值为blue orange red green*/
   color: string,

@@ -1,11 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
-import { Inst } from './problem-backend.service';
+import { Inst, Status } from './problem-backend.service';
 
 const baseUrl: string = environment.API_URL;
 
-export interface Module {
+export interface Action {
+}
+
+export interface Module extends Action {
   name: string,
   instructions: Inst[]
 };
@@ -13,11 +16,11 @@ export interface Module {
 export interface Project {
   title: string,
   description: string,
-  // todo
+  actions: Action[]
 }
 
-export interface ProjForwardResult {
-
+interface ProjForwardResult {
+  statusList: Status[]
 }
 
 interface SimpleMsgResult {
@@ -31,7 +34,12 @@ interface ModulesResult {
 
 interface ProjectsResult {
   message: string,
-  
+  projects: Project[]
+}
+
+interface ProjectResult {
+  message: string,
+  project: Project
 }
 
 @Injectable({
@@ -56,15 +64,35 @@ export class ModProjService {
     })
   }
 
-  createProject() {
-
+  //TODO:
+  createProject(actions:Action[], title:string, description:string) {
+    let token: string = localStorage.getItem('token')!;
+    return this.http.post<SimpleMsgResult>(baseUrl + '/projectCreate', {
+      token, title, description, actions
+    })
   }
 
-  projectForward() {
-
+  projectForward(id:number, input:string[], memory:string[], instructions:Inst[]) {
+    return this.http.post<ProjForwardResult>(baseUrl + '/solveProject', {
+      id, input, memory, instructions
+    })
   }
 
   getProjects() {
+    let token: string = localStorage.getItem('token')!;
+    return this.http.post<ProjectsResult>(baseUrl + '/projectByUser', {
+      token
+    })
+  }
+
+  getProjectById(id: number) {
+    let token: string = localStorage.getItem('token')!;
+    return this.http.post<ProjectResult>(baseUrl + '/projectById', {
+      token, id
+    })
+  }
+
+  updateProjects() {
 
   }
 }
