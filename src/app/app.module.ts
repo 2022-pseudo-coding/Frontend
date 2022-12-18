@@ -30,6 +30,7 @@ import { CodingComponent } from './coding/coding.component';
 import { CodingModuleComponent, ModDialog } from './coding-module/coding-module.component';
 import { CodingProjectComponent, ProjDialog } from './coding-project/coding-project.component';
 import { ModProjService } from './services/mod-proj.service';
+import { SelfprojComponent} from "./selfproj/selfproj.component";
 
 @NgModule({
   declarations: [
@@ -49,7 +50,8 @@ import { ModProjService } from './services/mod-proj.service';
     CodingModuleComponent,
     CodingProjectComponent,
     ModDialog, 
-    ProjDialog
+    ProjDialog,
+    SelfprojComponent
   ],
   imports: [
     BrowserModule,
