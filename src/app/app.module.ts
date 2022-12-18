@@ -31,6 +31,8 @@ import { CodingModuleComponent, ModDialog } from './coding-module/coding-module.
 import { CodingProjectComponent, ProjDialog } from './coding-project/coding-project.component';
 import { ModProjService } from './services/mod-proj.service';
 import { SelfprojComponent} from "./selfproj/selfproj.component";
+import { StageComponent } from './stage/stage.component';
+
 
 @NgModule({
   declarations: [
@@ -51,7 +53,8 @@ import { SelfprojComponent} from "./selfproj/selfproj.component";
     CodingProjectComponent,
     ModDialog, 
     ProjDialog,
-    SelfprojComponent
+    SelfprojComponent,
+    StageComponent,
   ],
   imports: [
     BrowserModule,

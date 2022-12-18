@@ -16,7 +16,7 @@ import { DataService } from '../services/data.service';
 })
 export class LoginComponent implements OnInit {
   isAdmin: boolean = false;
-
+stagelist:any=[[],[],[]]
   passwordHide = true;
   username = new FormControl('', [Validators.required]);
   password = new FormControl('', Validators.required);

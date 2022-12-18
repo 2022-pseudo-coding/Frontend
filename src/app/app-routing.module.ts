@@ -9,6 +9,7 @@ import { CodingComponent } from './coding/coding.component';
 import { CodingModuleComponent } from './coding-module/coding-module.component';
 import { CodingProjectComponent } from './coding-project/coding-project.component';
 import { SelfprojComponent} from "./selfproj/selfproj.component";
+import { StageComponent } from './stage/stage.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/center', pathMatch: 'full' },
@@ -21,11 +22,13 @@ const routes: Routes = [
   { path: 'center', component: UserCenterComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
+  {path:'stage',component:StageComponent},
   { path: 'admin', component: AdminComponent },
   { path: 'module', component: CodingModuleComponent },
   { path: 'project', component: CodingProjectComponent },
   { path: 'selfProj', component: SelfprojComponent},
-  { path: '**', component: PageNotFoundComponent }
+  { path: '**', component: PageNotFoundComponent },
+ 
 ];
 
 @NgModule({
