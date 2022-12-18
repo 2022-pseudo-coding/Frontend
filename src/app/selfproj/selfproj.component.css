@@ -1,0 +1,28 @@
+.wrapper {
+  height: 100%;
+  width: 100%;
+}
+
+.left{
+  margin-top: 10%;
+  height: 90%;
+  width:55%;
+  margin-left: 5%;
+  float: left;
+}
+.right{
+  margin-top: 10%;
+  height: 90%;
+  width:28%;
+  margin-right: 5%;
+  float: right;
+}
+
+.border {
+  border: 2px dashed rgb(135, 7, 96);
+  border-radius: 5px;
+}
+
+.inner {
+  margin: 5%;
+}
