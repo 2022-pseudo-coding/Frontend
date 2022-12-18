@@ -47,7 +47,7 @@ export class LoginComponent implements OnInit {
         if (this.isAdmin) {
           this.router.navigate(["/admin"]);
         } else {
-          this.router.navigate(["/world/camp"]);
+          this.router.navigate(["/center"]);
         }
 
       }

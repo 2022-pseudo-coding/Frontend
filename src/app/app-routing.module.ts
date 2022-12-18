@@ -6,7 +6,8 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
 import { RegisterComponent } from './register/register.component';
 import { UserCenterComponent } from './user-center/user-center.component';
 import { CodingComponent } from './coding/coding.component';
-
+import { CodingModuleComponent } from './coding-module/coding-module.component';
+import { CodingProjectComponent } from './coding-project/coding-project.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/center', pathMatch: 'full' },
@@ -20,6 +21,8 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'admin', component: AdminComponent },
+  { path: 'module', component: CodingModuleComponent },
+  { path: 'project', component: CodingProjectComponent },
   { path: '**', component: PageNotFoundComponent }
 ];
 

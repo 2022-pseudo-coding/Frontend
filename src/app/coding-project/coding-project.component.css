@@ -1,0 +1,92 @@
+.wrapper {
+    height: 100%;
+    width: 100%;
+}
+
+.left-wrapper {
+    height: 90%;
+    width: 20%;
+    float: left;
+    margin-left: 5%;
+    margin-top: 5%;
+}
+
+.right-wrapper {
+    height: 90%;
+    width: 65%;
+    margin-left: 5%;
+    margin-top: 5%;
+    float: left;
+}
+
+.right-upper-wrapper {
+    height: 53%;
+    margin-bottom: 2%;
+}
+
+.right-lower-wrapper {
+    height: 42%;
+}
+
+.control-panel {
+    float: left;
+    height: 100%;
+    width: 25%;
+}
+
+.memory-bank {
+    float: left;
+    height: 100%;
+    width: 71%;
+    margin-left: 3%;
+}
+
+.left-upper-wrapper {
+    height: 25%;
+
+}
+
+.left-lower-wrapper {
+    height: 70%;
+    margin-top: 2%;
+}
+
+.inner {
+    margin: 5%;
+}
+
+.inst-btn {
+    display: block;
+}
+
+.del-btn {
+    float: right
+}
+
+.border {
+    border: 2px dashed rgb(135, 7, 96);
+    border-radius: 5px;
+}
+
+mat-chip {
+    font-size: large;
+}
+
+.mem-item {
+    width: 7%;
+}
+
+.control-btn {
+    width: 30%;
+    margin: 6%;
+    display: block;
+}
+
+.item-wrapper {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    white-space: nowrap;
+    width: 96%;
+    margin-left: 2%;
+    margin-top: 1.5%;
+}

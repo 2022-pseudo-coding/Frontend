@@ -27,7 +27,9 @@ import { ManualComponent } from './manual/manual.component';
 import { TableDialogComponent } from './table-dialog/table-dialog.component';
 import { AdminComponent } from './admin/admin.component';
 import { CodingComponent } from './coding/coding.component';
-
+import { CodingModuleComponent, ModDialog } from './coding-module/coding-module.component';
+import { CodingProjectComponent, ProjDialog } from './coding-project/coding-project.component';
+import { ModProjService } from './services/mod-proj.service';
 
 @NgModule({
   declarations: [
@@ -44,6 +46,10 @@ import { CodingComponent } from './coding/coding.component';
     ManualComponent,
     TableDialogComponent,
     AdminComponent,
+    CodingModuleComponent,
+    CodingProjectComponent,
+    ModDialog, 
+    ProjDialog
   ],
   imports: [
     BrowserModule,
@@ -61,7 +67,7 @@ import { CodingComponent } from './coding/coding.component';
     provide: HTTP_INTERCEPTORS,
     useClass: AuthInterceptor,
     multi: true
-  }, DataService, ProblemBackendService
+  }, DataService, ProblemBackendService, ModProjService
   ],
   bootstrap: [AppComponent]
 })
