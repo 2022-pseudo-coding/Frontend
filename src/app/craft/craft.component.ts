@@ -12,13 +12,9 @@ import { HttpErrorResponse } from '@angular/common/http';
   templateUrl: './craft.component.html',
   styleUrls: ['./craft.component.css']
 })
-export class CraftComponent implements OnChanges {
+export class CraftComponent implements OnInit {
   selectedInstructions: any[] = [];
-  instructionInitialized = false;
-  @Input() mapSolved!: boolean;
-  @Input() mapId!: string;
-  @Input() position!: number[];
-  @Input() instructions: string[] = [];
+  instructions: string[] = 'inbox;outbox;copyfrom;copyto;add;sub;bump+;bump-;jump;jump_zero;jump_neg'.split(';');
 
   form: FormGroup;
   title = new FormControl('', [Validators.required]);
@@ -41,29 +37,26 @@ export class CraftComponent implements OnChanges {
     });
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (!this.instructionInitialized && this.instructions.length !== 0) {
-      for (let name of this.instructions as any) {
-        let checked = name === 'inbox' || name === 'outbox';
-        let disabled = checked;
-        this.selectedInstructions.push({
-          checked, disabled, name
-        })
-      }
-      this.instructionInitialized = true
+  ngOnInit(): void {
+    for (let name of this.instructions as any) {
+      let checked = name === 'inbox' || name === 'outbox';
+      let disabled = checked;
+      this.selectedInstructions.push({
+        checked, disabled, name
+      })
     }
   }
 
   onSubmit(): void {
     if (this.form.valid) {
-      this.authService.userDefine(this.mapId, {
+      this.authService.userDefine({
         title: this.title.value,
         description: this.description.value,
         input: this.input.value,
         output: this.output.value,
         memory: this.memory.value,
         instructions: this.selectedInstructions.filter(inst => inst.checked).map(inst => inst.name),
-        worldInfo: this.position
+        worldInfo: [1,2,3]
       }).pipe(catchError((error: HttpErrorResponse) => {
         this.openDialog('Whoops!', 'Something unexpected happened. Check your network connectivity');
         return throwError(() => new Error('Something bad happened!'))

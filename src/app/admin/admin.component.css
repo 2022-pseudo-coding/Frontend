@@ -7,20 +7,51 @@
 }
 
 .example-radio-button {
-    margin-top: 2%;
+    margin-top: 5%;
 }
 
 .chart {
-    position: fixed;
-    right: 10%;
-    top: 20%;
-    width: 70%;
-    height: 50%;
+    float: right;
+    width: 75%;
+    height: 60%;
+    margin-top: 5%;
 }
 
-.radio {
-    position: fixed;
-    width: 30%;
-    top:35%;
-    left:5%;
+.radio-div {
+    float: left;
+    margin-top: 5%;
+    margin-left: 1%;
+    width: 20%;
+}
+
+.example-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 90%;
+    height: 100%;
+    visibility: hidden;
+}
+
+.example-sidenav-content {
+    visibility: visible;
+    color: black;
+    display: flex;
+    height: 60px;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    position: absolute;
+    top: 40%;
+    z-index: 99;
+}
+
+.mat-icon-button{
+    background-color: darkgray;
+}
+
+.example-sidenav {
+    visibility: visible;
+    width: 90%;
+    z-index: 100;
 }

@@ -13,12 +13,6 @@
                 <mat-error *ngIf="description.invalid">{{getEmptyErrorMsg()}}</mat-error>
             </mat-form-field>
             <div class="input-field">
-                <h2>Position</h2>
-                <span class="input-field-span">{{position[0]}}</span>
-                <span class="input-field-span">{{position[1]}}</span>
-                <span class="input-field-span">{{position[2]}}</span>
-            </div>
-            <div class="input-field">
                 <h2>Instructions</h2>
                 <mat-checkbox *ngFor="let inst of selectedInstructions"
                 [(ngModel)]="inst.checked"

@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import * as shape from 'd3-shape';
 import { Subject } from 'rxjs';
 import { catchError, EMPTY } from 'rxjs';
@@ -9,7 +9,7 @@ import { Inst, Problem, ProblemBackendService, Status } from '../services/proble
 import { canRefer, canJump, nodeToInst } from '../coding/utils'
 import { DialogComponent } from '../dialog/dialog.component';
 import { Edge, Node } from '../coding/coding.component';
-import { ModProjService } from '../services/mod-proj.service';
+import { ModProjService, Module } from '../services/mod-proj.service';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component({
@@ -34,6 +34,7 @@ export class CodingModuleComponent implements OnInit {
     * all the lists
   */
   memory: string[] = [];
+  module!: Module;
 
   /*
     * inst & prob
@@ -57,6 +58,7 @@ export class CodingModuleComponent implements OnInit {
     private router: Router,
     private dataService: DataService,
     private dialog: MatDialog,
+    private route: ActivatedRoute
   ) {
 
   }
@@ -72,6 +74,12 @@ export class CodingModuleComponent implements OnInit {
       this.memory = result.problem.memory.split(';');
       this.memory.forEach((el, i) => {
         this.memory[i] = '0';
+      });
+      this.modProjService.getModule(this.route.snapshot.queryParamMap.get('name')!).subscribe(result => {
+        this.module = result.module;
+        for(let inst of this.module.instructions){
+          this.add(inst);
+        }
       })
     });
   }
@@ -92,30 +100,18 @@ export class CodingModuleComponent implements OnInit {
         return;
       }
     }
-    let data = {
-      name: '',
-      ok: false
-    }
-    const modDialog = this.dialog.open(ModDialog, {
-      width: '300px',
-      data: data
-    });
-    modDialog.afterClosed().subscribe(result => {
-      if (data.name !== '' && data.ok) {
-        this.modProjService.createModule(data.name, this.userInsts).pipe(catchError(err => {
-          localStorage.clear();
-          this.dataService.isLoggedIn.next(false);
-          this.router.navigate(['login']);
-          return EMPTY;
-        })).subscribe(result => {
-          this.dialog.open(DialogComponent, {
-            width: '300px',
-            data: { title: 'Message', message: result.message }
-          })
-        });
-      }
 
-    })
+    this.modProjService.updateModule(this.module.name, this.userInsts).pipe(catchError(err => {
+      localStorage.clear();
+      this.dataService.isLoggedIn.next(false);
+      this.router.navigate(['login']);
+      return EMPTY;
+    })).subscribe(result => {
+      this.dialog.open(DialogComponent, {
+        width: '300px',
+        data: { title: 'Message', message: result.message }
+      })
+    });
 
   }
 
@@ -176,19 +172,20 @@ export class CodingModuleComponent implements OnInit {
   add(inst: Inst): void {
     let cnt = this.userInsts.length;
     let curr = cnt.toString();
+    let node = {
+      id: curr,
+      label: inst.name,
+      color: inst.color,
+      isSelected: false,
+      isActive: false
+    };
     this.userInsts.push({
       name: inst.name,
       color: inst.color,
       referTo: inst.referTo,
       jumpTo: inst.jumpTo
     });
-    this.nodes.push({
-      id: curr,
-      label: inst.name,
-      color: inst.color,
-      isSelected: false,
-      isActive: false
-    });
+    this.nodes.push(node);
     if (cnt > 0) {
       let prev = (cnt - 1).toString();
       this.links.push({
@@ -196,6 +193,16 @@ export class CodingModuleComponent implements OnInit {
         target: curr,
         label: 'next'
       })
+    }
+    if(canJump(inst) && inst.jumpTo > -1){
+      this.links.push({
+        source: curr,
+        target: inst.jumpTo.toString(),
+        label: 'jump to'
+      })
+    }
+    if(canRefer(inst) && inst.referTo > -1){
+      node.label += ' ' + inst.referTo;
     }
     this.updateAll();
   }
@@ -214,22 +221,5 @@ export class CodingModuleComponent implements OnInit {
       this.links = this.links.filter(e => e.source !== curr && e.target !== curr)
       this.updateAll();
     }
-  }
-
-}
-
-@Component({
-  templateUrl: 'mod-dialog.html',
-})
-export class ModDialog {
-  constructor(
-    public dialogRef: MatDialogRef<ModDialog>,
-    @Inject(MAT_DIALOG_DATA) public data: {
-      name: string, ok: boolean
-    },
-  ) { }
-
-  ok() {
-    this.data.ok = true;
   }
 }

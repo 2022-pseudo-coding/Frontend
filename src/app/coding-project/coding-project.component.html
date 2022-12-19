@@ -1,8 +1,8 @@
 <div class="wrapper">
     <div class="left-wrapper">
       <div class="left-upper-wrapper border">
-        <h1 class="inner">{{prob.title}}</h1>
-        <p class="inner">{{prob.description}}</p>
+        <h1 class="inner">{{project.title}}</h1>
+        <p class="inner">{{project.description}}</p>
       </div>
       <div class="left-lower-wrapper border">
         <h1 class="inner">Available Instructions</h1>
@@ -10,7 +10,7 @@
           class="inst-btn inner" (click)="add(inst)">
           {{inst.name}}
         </button>
-        <button mat-fab class="inst-btn inner del-btn" (click)="delete()">
+        <button mat-fab class="inner del-btn" (click)="delete()">
           <mat-icon>delete</mat-icon>
         </button>
       </div>

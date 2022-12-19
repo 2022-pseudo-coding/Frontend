@@ -1,47 +1,76 @@
-<div class="wrapper">
-      <div class="left border">
-      <h1 class="inner">Your Own Modules</h1>
-      <button mat-raised-button class="inst-btn inner" *ngFor="let m of module" (click)="showInst(m)">
-        {{m.name}}
-      </button>
-        <button mat-raised-button class="inst-btn inner">hello</button>
-      </div>
+<div class="wrapper" id="selfproj">
+  <div class="left border">
+    <mat-tab-group>
+      <mat-tab label="Modules">
+        <mat-expansion-panel *ngFor="let m of modules" style="margin: 5%;">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              {{m.name}}
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <button mat-flat-button color="warn" class="inner" (click)="showModuleInst(m)">SHOW</button>
+          <button mat-flat-button color="warn" class="inner" (click)="toModule(m)">EDIT</button>
+        </mat-expansion-panel>
+
+        <button mat-fab color="warn" class="inner">
+          <mat-icon (click)="newModule()">add</mat-icon>
+        </button>
+      </mat-tab>
+      <mat-tab label="Projects">
+        <mat-expansion-panel *ngFor="let m of projects" style="margin: 5%;">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              {{m.title}}
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <button mat-flat-button color="warn" class="inner" (click)="showProjectInst(m)">SHOW</button>
+          <button mat-flat-button color="warn" class="inner" (click)="toProject(m)">EDIT</button>
+        </mat-expansion-panel>
+        <button mat-fab color="warn" class="inner">
+          <mat-icon (click)="newProject()">add</mat-icon>
+        </button>
+      </mat-tab>
+    </mat-tab-group>
+
+  </div>
 
   <div class="right border">
+    <h1 style="margin:3%">{{curName}}</h1>
 
-      <ngx-graph [view]="windowSize" [showMiniMap]="true" [links]="links" [nodes]="nodes" [animate]="false">
-        <ng-template #defsTemplate>
-          <svg:marker id="arrow" viewBox="0 -5 10 10" refX="8" refY="0" markerWidth="4" markerHeight="4" orient="auto">
-            <svg:path d="M0,-5L10,0L0,5" class="arrow-head" />
-          </svg:marker>
-        </ng-template>
+    <ngx-graph [view]="windowSize" [showMiniMap]="true" [links]="links" [nodes]="nodes" [animate]="true"
+      [update$]="update$" [center$]="center$" [draggingEnabled]="false" [layoutSettings]="{orientation: 'TB'}">
+      <ng-template #defsTemplate>
+        <svg:marker id="arrow" viewBox="0 -5 10 10" refX="8" refY="0" markerWidth="4" markerHeight="4" orient="auto">
+          <svg:path d="M0,-5L10,0L0,5" class="arrow-head" />
+        </svg:marker>
+      </ng-template>
 
-        <ng-template #nodeTemplate let-node>
-          <svg:g>
-            <rect [attr.width]="node.dimension.width" [attr.height]="node.dimension.height" stroke="plum"
-                  stroke-width="6" fill="None" rx="5" *ngIf="node.isSelected" />
-            <rect [attr.width]="node.dimension.width" [attr.height]="node.dimension.height" stroke="coral"
-                  stroke-width="6" fill="None" rx="5" *ngIf="node.isActive" />
-            <svg:rect [attr.width]="node.dimension.width" [attr.height]="node.dimension.height"
-                      [style]="'fill: '+ node.color" rx="5" />
-            <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.dimension.height / 2"
-                      style="fill:azure">{{node.label}}</svg:text>
-          </svg:g>
-        </ng-template>
+      <ng-template #nodeTemplate let-node>
+        <svg:g>
+          <rect [attr.width]="node.dimension.width" [attr.height]="node.dimension.height" stroke="plum" stroke-width="6"
+            fill="None" rx="5" *ngIf="node.isSelected" />
+          <rect [attr.width]="node.dimension.width" [attr.height]="node.dimension.height" stroke="coral"
+            stroke-width="6" fill="None" rx="5" *ngIf="node.isActive" />
+          <svg:rect [attr.width]="node.dimension.width" [attr.height]="node.dimension.height"
+            [style]="'fill: '+ node.color" rx="5" />
+          <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.dimension.height / 2" style="fill:azure">
+            {{node.label}}</svg:text>
+        </svg:g>
+      </ng-template>
 
-        <ng-template #linkTemplate let-link>
-          <svg:g class="edge">
-            <svg:path class="line" stroke-width="2" marker-end="url(#arrow)">
-            </svg:path>
-            <svg:text class="edge-label" text-anchor="middle">
-              <textPath class="text-path" [attr.href]="'#' + link.id" [style.dominant-baseline]="link.dominantBaseline"
-                        startOffset="50%">
-                {{link.label}}
-              </textPath>
-            </svg:text>
-          </svg:g>
-        </ng-template>
-      </ngx-graph>
-    </div>
+      <ng-template #linkTemplate let-link>
+        <svg:g class="edge">
+          <svg:path class="line" stroke-width="2" marker-end="url(#arrow)">
+          </svg:path>
+          <svg:text class="edge-label" text-anchor="middle">
+            <textPath class="text-path" [attr.href]="'#' + link.id" [style.dominant-baseline]="link.dominantBaseline"
+              startOffset="50%">
+              {{link.label}}
+            </textPath>
+          </svg:text>
+        </svg:g>
+      </ng-template>
+    </ngx-graph>
+  </div>
 
 </div>

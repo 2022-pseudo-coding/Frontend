@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import * as shape from 'd3-shape';
 import { Subject } from 'rxjs';
 import { catchError, EMPTY } from 'rxjs';
@@ -75,11 +75,15 @@ export class CodingComponent implements OnInit {
   constructor(private problemService: ProblemBackendService,
     private router: Router,
     private dataService: DataService,
-    private dialog: MatDialog) {
+    private dialog: MatDialog,
+    private route:ActivatedRoute) {
 
   }
 
   ngOnInit(): void {
+    let map = this.route.snapshot.queryParamMap
+    this.stage = map.get('stage')!;
+    this.numberInStage = map.get('problem')!;
     this.problemService.getProblem(this.stage, this.numberInStage).pipe(catchError(err => {
       localStorage.clear();
       this.dataService.isLoggedIn.next(false);
@@ -109,7 +113,6 @@ export class CodingComponent implements OnInit {
         return;
       }
     }
-    console.log(this.userInsts)
     this.problemService.sendSolution(this.stage, this.numberInStage, this.userInsts).pipe(catchError(err => {
       localStorage.clear();
       this.dataService.isLoggedIn.next(false);
@@ -119,7 +122,6 @@ export class CodingComponent implements OnInit {
       this.state = result.message;
       this.statusList = result.statusList;
       this.hasSubmitted = true;
-      console.log(result.statusList);
     });
   }
 

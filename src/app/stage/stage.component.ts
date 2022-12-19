@@ -1,11 +1,13 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import {Router} from "@angular/router";
+import { Router } from "@angular/router";
 import { MatDialog } from '@angular/material/dialog';
 import { DialogComponent } from '../dialog/dialog.component';
 import { catchError, throwError } from 'rxjs';
-import { StageService } from '../services/stage.service';
-import { threadId } from 'worker_threads';
+import { Stage, StageService } from '../services/stage.service';
+import { Problem } from '../services/problem-backend.service';
+import { TableDialogComponent } from '../table-dialog/table-dialog.component';
+
 @Component({
   selector: 'app-stage',
   templateUrl: './stage.component.html',
@@ -13,26 +15,42 @@ import { threadId } from 'worker_threads';
 })
 export class StageComponent implements OnInit {
 
-  constructor( private router: Router,private stageService:StageService) { }
-   stagelist:any=[[],[],[]]
+  stagelist: Stage[] = []
+
+  constructor(private router: Router,
+    private stageService: StageService,
+    private dialog: MatDialog) { }
+
   ngOnInit(): void {
     //GET关卡题目
-   this.stageService.getQuestion(this.stagelist.stage.problem)
-  }
-  enter(stage:number,problem:number){
-  // POST
-  this.stageService.enterQuestion(this.stagelist.stage.problem,this.stagelist.stage)
-    .pipe(catchError((error: HttpErrorResponse) => {
-      return throwError(() => new Error('Something bad happened!'))
-    }))
-    .subscribe(result => {
-    this.router.navigate(["/stage"])
-      queryParams:{
-        stage:this.stagelist.stage;
-        problem:this.stagelist.problem
+    this.stageService.getAllQuestions().subscribe(result => {
+      this.stagelist = result.stages
+      for (let solution of result.mySolutions) {
+        this.stagelist[solution.stage - 1].problems[solution.number - 1].solved = true
       }
-    
-     })
-    
+    })
+  }
+
+  enter(stage: number, problem: number) {
+    this.router.navigate(["/coding/problem"],
+      {
+        queryParams: {
+          stage: stage,
+          problem: problem
+        }
+      })
+  }
+
+  history(problem: Problem) {
+    this.dialog.open(TableDialogComponent, {
+      width: '300px',
+      data: {
+        title: 'Solutions of ' + problem.title,
+        message: 'This problem has not been solved yet.',
+        hasSolutions: problem.solutions.length !== 0,
+        solutions: problem.solutions
+      },
+
+    });
   }
 }

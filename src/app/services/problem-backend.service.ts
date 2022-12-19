@@ -19,10 +19,11 @@ export interface Problem {
   instructions: Inst[],
 
   /* 答案 */
-  solutions: Solution[]
+  solutions: Solution[],
+  solved: boolean
 }
 
-export interface Inst extends Action{
+export interface Inst extends Action {
   name: string,
   /* color可以不管，如果要用的话可取值为blue orange red green*/
   color: string,
@@ -43,8 +44,9 @@ export interface Status {
 }
 
 export interface Solution {
-  stage:number,
-  number:number,
+  id: number,
+  stage: number,
+  number: number,
   steps: number,
   numInst: number,
   instructions: Inst[]
@@ -82,5 +84,5 @@ export class ProblemBackendService {
     })
   }
 
-  
+
 }

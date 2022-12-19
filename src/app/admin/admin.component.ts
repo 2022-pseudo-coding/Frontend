@@ -13,8 +13,8 @@ import { ChartOptions, ChartType, ChartDataset } from 'chart.js';
 })
 export class AdminComponent implements OnInit {
 
-  stageList: any = [[], [], []];
-  selected: string[] = ['1-1', '2-1', '3-1'];
+  stageList: any = [[], [], [], []];
+  selected: string[] = ['1-1', '2-1', '3-1', '4-1'];
   labels: string[] = ['average', 'max', 'min'];
   options: ChartOptions = {
     responsive: true,
@@ -23,13 +23,13 @@ export class AdminComponent implements OnInit {
       legend: {
         position: 'right',
       },
-    }, 
+    },
     scales: {
       x: {
-        ticks: {color: 'white'}
+        ticks: { color: 'white' }
       },
       y: {
-        ticks: {color: 'white'}
+        ticks: { color: 'white' }
       }
     }
   };
@@ -49,8 +49,10 @@ export class AdminComponent implements OnInit {
         this.router.navigate(['login']);
         return EMPTY;
       })).subscribe(result => {
+        console.log(result)
         let solutionMap = result.solutionMap;
         Object.keys(solutionMap).forEach((el) => {
+          console.log(this.stageList[Number(el[0]) - 1])
           this.stageList[Number(el[0]) - 1].push(solutionMap[el]);
         });
         this.stageList.forEach((stage: any, stageIndex: number) => {

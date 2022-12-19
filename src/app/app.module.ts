@@ -27,12 +27,12 @@ import { ManualComponent } from './manual/manual.component';
 import { TableDialogComponent } from './table-dialog/table-dialog.component';
 import { AdminComponent } from './admin/admin.component';
 import { CodingComponent } from './coding/coding.component';
-import { CodingModuleComponent, ModDialog } from './coding-module/coding-module.component';
-import { CodingProjectComponent, ProjDialog } from './coding-project/coding-project.component';
+import { CodingModuleComponent, } from './coding-module/coding-module.component';
+import { CodingProjectComponent, } from './coding-project/coding-project.component';
 import { ModProjService } from './services/mod-proj.service';
-import { SelfprojComponent} from "./selfproj/selfproj.component";
+import { SelfprojComponent, ProjDialog, ModDialog } from "./selfproj/selfproj.component";
 import { StageComponent } from './stage/stage.component';
-
+import { StageService } from './services/stage.service';
 
 @NgModule({
   declarations: [
@@ -51,7 +51,7 @@ import { StageComponent } from './stage/stage.component';
     AdminComponent,
     CodingModuleComponent,
     CodingProjectComponent,
-    ModDialog, 
+    ModDialog,
     ProjDialog,
     SelfprojComponent,
     StageComponent,
@@ -72,7 +72,7 @@ import { StageComponent } from './stage/stage.component';
     provide: HTTP_INTERCEPTORS,
     useClass: AuthInterceptor,
     multi: true
-  }, DataService, ProblemBackendService, ModProjService
+  }, DataService, ProblemBackendService, ModProjService, StageService
   ],
   bootstrap: [AppComponent]
 })

@@ -56,7 +56,8 @@
 }
 
 .inst-btn {
-    display: block;
+    width: 25%;
+    margin-left: 15%;
 }
 
 .del-btn {
@@ -73,7 +74,7 @@ mat-chip {
 }
 
 .mem-item {
-    width: 7%;
+    width: 10%;
 }
 
 .control-btn {

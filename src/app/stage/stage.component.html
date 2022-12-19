@@ -1,12 +1,25 @@
-<mat-card *ngFor="let stage of stagelist; let i = index" [attr.data-index]="i">
-   
-    <div class="radio">
-        <mat-card-title>Stage {{i+1}} </mat-card-title>
-        <mat-card-content *ngFor="let problem of stage" >
-        {{problem.index}}
-        <button mat-button (click)="enter(stage.problem,stage.stage)">
-            ENTER
-        </button>
-        </mat-card-content>
-    </div>
-</mat-card>
+<div class="wrapper">
+    <mat-card *ngFor="let stage of stagelist; let i = index" [attr.data-index]="i">
+
+        <div class="radio">
+            <mat-card-title>Stage {{i+1}} -- {{stage.name}}</mat-card-title>
+            <mat-card-content *ngFor="let problem of stage.problems; let j=index">
+                <span style="margin-right: 5%;">{{j + 1}}</span>
+                <span style="margin-right: 5%;">{{problem.title}}</span>
+                <mat-icon *ngIf="problem.solved">
+                    check
+                </mat-icon>
+                <div class="right">
+                    <button mat-button (click)="history(problem)">
+                        HISTORY
+                    </button>
+                    <button mat-button (click)="enter(i+1, j+1)">
+                        ENTER
+                    </button>
+                </div>
+            </mat-card-content>
+        </div>
+    </mat-card>
+</div>
+<app-craft></app-craft>
+<app-admin></app-admin>

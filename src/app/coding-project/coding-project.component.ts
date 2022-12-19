@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import * as shape from 'd3-shape';
 import { Subject } from 'rxjs';
 import { catchError, EMPTY } from 'rxjs';
@@ -46,8 +46,10 @@ export class CodingProjectComponent implements OnInit {
     * inst & prob
   */
   userInsts: Inst[] = [];
+  actions:Action[] = [];
   selectedNode?: Node;
   prob!: Problem;
+  project!: Project;
 
   /*
     * graph data
@@ -60,10 +62,11 @@ export class CodingProjectComponent implements OnInit {
   center$: Subject<boolean> = new Subject();
 
   constructor(private problemService: ProblemBackendService,
-    private modProjService:ModProjService,
+    private modProjService: ModProjService,
     private router: Router,
     private dataService: DataService,
-    private dialog: MatDialog) {
+    private dialog: MatDialog,
+    private route: ActivatedRoute) {
 
   }
 
@@ -77,10 +80,15 @@ export class CodingProjectComponent implements OnInit {
       this.prob = result.problem;
       this.inputs = result.problem.input.split(';');
       this.memory = result.problem.memory.split(';');
-      this.modProjService.getProjects().subscribe(result=>{
-        console.log(result)
+      this.memory.forEach((el, i) => {
+        this.memory[i] = '0';
+      });
+      this.modProjService.getProjectById(this.route.snapshot.queryParamMap.get('id')!).subscribe(result => {
+        this.project = result.project;
+        this.actions = this.project.actions;
       })
     });
+
   }
 
   update(): void {
@@ -99,8 +107,12 @@ export class CodingProjectComponent implements OnInit {
         return;
       }
     }
-    console.log(this.userInsts)
-    // TODO: update project
+    this.modProjService.updateProject(this.project.id, this.actions).subscribe(result => {
+      this.dialog.open(DialogComponent, {
+        width: '300px',
+        data: { title: 'Message', message: result.message }
+      });
+    })
   }
 
   play(): void {
@@ -258,22 +270,4 @@ export class CodingProjectComponent implements OnInit {
     }
   }
 
-}
-
-@Component({
-  templateUrl: 'proj-dialog.html',
-})
-export class ProjDialog {
-  constructor(
-    public dialogRef: MatDialogRef<ProjDialog>,
-    @Inject(MAT_DIALOG_DATA) public data: {
-      title: string,
-      description: string,
-      ok: boolean
-    },
-  ) { }
-
-  ok() {
-    this.data.ok = true;
-  }
 }

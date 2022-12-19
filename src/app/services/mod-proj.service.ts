@@ -16,7 +16,8 @@ export interface Module extends Action {
 export interface Project {
   title: string,
   description: string,
-  actions: Action[]
+  actions: Action[],
+  id: number
 }
 
 interface ProjForwardResult {
@@ -24,22 +25,25 @@ interface ProjForwardResult {
 }
 
 interface SimpleMsgResult {
-  message: string
-}
-
-interface ModulesResult {
-  modules: Module[],
-  message: string
-}
-
-interface ProjectsResult {
   message: string,
-  projects: Project[]
+  id: number,
+  name: string
+}
+
+interface ProjectsModulesResult {
+  message: string,
+  projects: Project[],
+  modules: Module[]
 }
 
 interface ProjectResult {
   message: string,
-  project: Project
+  project: Project,
+}
+
+interface ModuleResult {
+  message: string,
+  module: Module
 }
 
 @Injectable({
@@ -49,49 +53,59 @@ export class ModProjService {
 
   constructor(private http: HttpClient) { }
 
-  createModule(name: string, instructions: Inst[]) {
+  createModule(name: string) {
     let token: string = localStorage.getItem('token')!
     let color = 'whatever'
-    return this.http.post<SimpleMsgResult>(baseUrl + '/userDefineModule', {
-      token, color, name, instructions
+    return this.http.post<SimpleMsgResult>(baseUrl + '/module/create', {
+      token, color, name
     })
   }
 
-  getModules(name: string) {
-    let token: string = localStorage.getItem('token')!;
-    return this.http.post<ModulesResult>(baseUrl + '/module', {
+  updateModule(name: string, instructions: Inst[]) {
+    let token: string = localStorage.getItem('token')!
+    return this.http.post<SimpleMsgResult>(baseUrl + '/module/update', {
+      token, name, instructions
+    })
+  }
+
+  getModule(name: string) {
+    let token: string = localStorage.getItem('token')!
+    return this.http.post<ModuleResult>(baseUrl + '/module/name', {
       token, name
     })
   }
 
-  createProject(actions:Action[], title:string, description:string) {
+  createProject(title: string, description: string) {
     let token: string = localStorage.getItem('token')!;
-    return this.http.post<SimpleMsgResult>(baseUrl + '/projectCreate', {
-      token, title, description, actions
+    return this.http.post<SimpleMsgResult>(baseUrl + '/project/create', {
+      token, title, description
     })
   }
 
-  projectForward(id:number, input:string[], memory:string[], instructions:Inst[]) {
-    return this.http.post<ProjForwardResult>(baseUrl + '/solveProject', {
+  updateProject(id: number, actions: Action[]) {
+    let token: string = localStorage.getItem('token')!;
+    return this.http.post<SimpleMsgResult>(baseUrl + '/project/update', {
+      token, id, actions
+    })
+  }
+
+  projectForward(id: number, input: string[], memory: string[], instructions: Inst[]) {
+    return this.http.post<ProjForwardResult>(baseUrl + '/project/solve', {
       id, input, memory, instructions
     })
   }
 
-  getProjects() {
+  getProjectsModules() {
     let token: string = localStorage.getItem('token')!;
-    return this.http.post<ProjectsResult>(baseUrl + '/projectByUser', {
+    return this.http.post<ProjectsModulesResult>(baseUrl + '/project/user', {
       token
     })
   }
 
-  getProjectById(id: number) {
+  getProjectById(id: string) {
     let token: string = localStorage.getItem('token')!;
-    return this.http.post<ProjectResult>(baseUrl + '/projectById', {
+    return this.http.post<ProjectResult>(baseUrl + '/project/id', {
       token, id
     })
-  }
-
-  updateProjects() {
-  //TODO:
   }
 }

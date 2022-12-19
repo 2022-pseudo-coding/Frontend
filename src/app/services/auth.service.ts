@@ -27,10 +27,6 @@ interface LoginResult {
   modelName: string
 }
 
-interface MapSolvedResult {
-  mapSolved: boolean
-}
-
 interface UserDefineResult {
   message: string,
   name: string
@@ -74,25 +70,11 @@ export class AuthService {
     return this.http.post<ChangeResult>(baseUrl + '/changePassword', { password, rePassword, token });
   }
 
-  mapSolved(mapId: string) {
-    let token: string = localStorage.getItem('token')!;
-    let stage = this.mapIdToStage(mapId);
-
-    return this.http.post<MapSolvedResult>(baseUrl + '/mapSolved', { stage, token });
-  }
-
-  mapProblems(mapId: string) {
-    let token: string = localStorage.getItem('token')!;
-    let stage = this.mapIdToStage(mapId);
-
-    return this.http.post<MapProblemsResult>(baseUrl + '/mapProblems', { token, stage });
-  }
-
   adminCenter(){
     return this.http.get<AdminCenterResult>(baseUrl + '/admin/center');
   }
 
-  userDefine(mapId: string, problem: any) {
+  userDefine(problem: any) {
     let token = localStorage.getItem('token')!;
     let input = problem.input.split('').join(';');
     let output = problem.output.split('').join(';');
@@ -100,7 +82,7 @@ export class AuthService {
     let worldInfo = problem.worldInfo.join(';') + ';0';
     let title = problem.title;
     let description = problem.description;
-    let stage = this.mapIdToStage(mapId);
+    let stage = 4;
 
     let temp = problem.memory.split('');
     let memory = temp.length + ';' + temp.join(';');
@@ -108,17 +90,5 @@ export class AuthService {
     return this.http.post<UserDefineResult>(baseUrl + '/userDefine', {
       token, stage, title, description, input, output, instructions, memory, worldInfo
     })
-  }
-
-  private mapIdToStage(mapId: string): number {
-    switch (mapId) {
-      case 'camp':
-        return 1;
-      case 'island':
-        return 2;
-      case 'forest':
-        return 3;
-    }
-    return 1;
   }
 }

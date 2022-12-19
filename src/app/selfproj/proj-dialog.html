@@ -1,11 +1,15 @@
 <h1 mat-dialog-title>Create a Project</h1>
 <div mat-dialog-content>
   <mat-form-field appearance="fill">
-    <mat-label>Name the Module</mat-label>
+    <mat-label>Project title</mat-label>
     <input matInput [(ngModel)]="data.title">
-    <input matInput [(ngModel)]="data.description">
-    
   </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Project description</mat-label>
+    <input matInput [(ngModel)]="data.description">
+  </mat-form-field>
+
 </div>
 <div mat-dialog-actions>
   <button mat-button [mat-dialog-close]="data.description && data.title" cdkFocusInitial (click)="ok()">OK</button>

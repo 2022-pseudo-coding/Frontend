@@ -1,17 +1,16 @@
 .wrapper {
-  height: 100%;
   width: 100%;
+  padding-top: 5%;
 }
 
 .left{
-  margin-top: 10%;
   height: 90%;
   width:55%;
   margin-left: 5%;
   float: left;
 }
+
 .right{
-  margin-top: 10%;
   height: 90%;
   width:28%;
   margin-right: 5%;
@@ -25,4 +24,16 @@
 
 .inner {
   margin: 5%;
+}
+
+::ng-deep .mat-tab-label-content{
+  color: black;
+}
+
+::ng-deep .mat-expansion-panel {
+  background-color:chocolate;
+  display: inline;
+  float: left;
+  margin: 5%;
+  width: 150px;
 }
