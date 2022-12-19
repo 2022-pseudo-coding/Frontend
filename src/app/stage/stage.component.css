@@ -1,0 +1,28 @@
+.stage1 {
+    margin-top: 80px;
+   width: 100%;
+   height: 100px;
+    background-color: dimgray;
+}
+.stage2 {
+    margin-top: 100px;
+   width: 100%;
+   height: 100%;
+    background-color: dimgray;
+}
+.stage3 {
+    margin-top: 100px;
+   width: 100%;
+   height: 100%;
+    background-color: dimgray;
+}
+
+.mat-card {
+    padding: 40px 70px 50px;
+}
+.mat-stroked-button {
+    float: right;
+    border: 1px solid currentColor;
+    background: rgb(97, 102, 106);
+    
+}
