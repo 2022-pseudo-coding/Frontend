@@ -64,7 +64,6 @@ export class ModProjService {
     })
   }
 
-  //TODO:
   createProject(actions:Action[], title:string, description:string) {
     let token: string = localStorage.getItem('token')!;
     return this.http.post<SimpleMsgResult>(baseUrl + '/projectCreate', {
@@ -93,6 +92,6 @@ export class ModProjService {
   }
 
   updateProjects() {
-
+  //TODO:
   }
 }
