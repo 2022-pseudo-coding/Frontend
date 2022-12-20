@@ -80,7 +80,6 @@ mat-chip {
 .control-btn {
     width: 30%;
     margin: 6%;
-    display: block;
 }
 
 .item-wrapper {
@@ -90,4 +89,8 @@ mat-chip {
     width: 96%;
     margin-left: 2%;
     margin-top: 1.5%;
+}
+
+::ng-deep .mat-tab-label {
+    color: rgb(44, 42, 42);
 }

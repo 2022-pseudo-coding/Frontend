@@ -28,7 +28,7 @@ import { TableDialogComponent } from './table-dialog/table-dialog.component';
 import { AdminComponent } from './admin/admin.component';
 import { CodingComponent } from './coding/coding.component';
 import { CodingModuleComponent, } from './coding-module/coding-module.component';
-import { CodingProjectComponent, } from './coding-project/coding-project.component';
+import { CodingProjectComponent, InitDialog } from './coding-project/coding-project.component';
 import { ModProjService } from './services/mod-proj.service';
 import { SelfprojComponent, ProjDialog, ModDialog } from "./selfproj/selfproj.component";
 import { StageComponent } from './stage/stage.component';
@@ -55,6 +55,7 @@ import { StageService } from './services/stage.service';
     ProjDialog,
     SelfprojComponent,
     StageComponent,
+    InitDialog
   ],
   imports: [
     BrowserModule,

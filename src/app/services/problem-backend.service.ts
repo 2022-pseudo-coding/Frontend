@@ -24,7 +24,6 @@ export interface Problem {
 }
 
 export interface Inst extends Action {
-  name: string,
   /* color可以不管，如果要用的话可取值为blue orange red green*/
   color: string,
   /* 初始状态下这两个值不用管，发送solve请求时需要指定这两个的值 */

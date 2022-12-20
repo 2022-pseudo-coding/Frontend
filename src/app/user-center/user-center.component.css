@@ -59,3 +59,7 @@
     height: 300px;
     width: 300px;
 }
+
+::ng-deep .center-wrapper .mat-tab-label{
+    color: white;
+}

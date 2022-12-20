@@ -11,6 +11,7 @@ import { Edge, Node } from '../coding/coding.component';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { canJump, canRefer } from '../coding/utils';
 import { DialogComponent } from '../dialog/dialog.component';
+import { isModule } from '../coding-project/utils';
 
 @Component({
   selector: 'app-selfproj',
@@ -103,9 +104,46 @@ export class SelfprojComponent implements OnInit {
     let j = 0;
     this.nodes = []
     this.links = []
-    for (let action of project.actions) {
-      
-    }
+    project.actions.forEach((action, id)=>{
+      let curr = id + ''
+      if (isModule(action)) {
+        this.nodes.push({
+          id: curr,
+          label: action.name,
+          color: 'black',
+          isSelected: false,
+          isActive: false,
+        })
+      } else {
+        let node = {
+          id: curr,
+          label: (action as Inst).name,
+          color: (action as Inst).color,
+          isSelected: false,
+          isActive: false,
+        };
+        this.nodes.push(node);
+        if (canJump(action as Inst) && (action as Inst).jumpTo > -1) {
+          this.links.push({
+            source: curr,
+            target: (action as Inst).jumpTo.toString(),
+            label: 'jump to'
+          })
+        }
+        if (canRefer(action as Inst) && (action as Inst).referTo > -1) {
+          node.label += ' ' + (action as Inst).referTo;
+        }
+      }
+  
+      if (parseInt(curr) > 0) {
+        let prev = (parseInt(curr) - 1).toString();
+        this.links.push({
+          source: prev,
+          target: curr,
+          label: 'next'
+        })
+      }
+    })
   }
 
   newModule() {

@@ -15,7 +15,7 @@ export interface Node {
   label: string,
   isSelected: boolean,
   /** for playing */
-  isActive: boolean
+  isActive: boolean,
 }
 
 export interface Edge {

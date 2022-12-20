@@ -1,0 +1,16 @@
+<h1 mat-dialog-title>Set Input and Memory</h1>
+<div mat-dialog-content>
+  <mat-form-field appearance="fill">
+    <mat-label>Input, separate with ;</mat-label>
+    <input matInput [(ngModel)]="data.input">
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Memory, separate with ;</mat-label>
+    <input matInput [(ngModel)]="data.memory">
+  </mat-form-field>
+
+</div>
+<div mat-dialog-actions>
+  <button mat-button [mat-dialog-close]="data.memory && data.input" cdkFocusInitial (click)="ok()">OK</button>
+</div>

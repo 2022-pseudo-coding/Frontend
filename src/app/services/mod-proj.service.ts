@@ -6,10 +6,10 @@ import { Inst, Status } from './problem-backend.service';
 const baseUrl: string = environment.API_URL;
 
 export interface Action {
+  name: string,
 }
 
 export interface Module extends Action {
-  name: string,
   instructions: Inst[]
 };
 
@@ -39,6 +39,7 @@ interface ProjectsModulesResult {
 interface ProjectResult {
   message: string,
   project: Project,
+  modules: Module[]
 }
 
 interface ModuleResult {
@@ -84,12 +85,27 @@ export class ModProjService {
 
   updateProject(id: number, actions: Action[]) {
     let token: string = localStorage.getItem('token')!;
+    let instructions: (Inst|null)[] = []
+    let modules: (Module | null)[] = [];
+    let isModules: boolean[] = [];
+    actions.forEach((el, index) => {
+      if ('instructions' in el) {
+        modules.push(el as Module);
+        instructions.push(null)
+        isModules.push(true)
+      } else {
+        modules.push(null)
+        instructions.push(el as Inst);
+        isModules.push(false)
+      }
+    })
+
     return this.http.post<SimpleMsgResult>(baseUrl + '/project/update', {
-      token, id, actions
+      token, id, modules, isModules, instructions
     })
   }
 
-  projectForward(id: number, input: string[], memory: string[], instructions: Inst[]) {
+  projectForward(id: string, input: string[], memory: string[], instructions: Inst[]) {
     return this.http.post<ProjForwardResult>(baseUrl + '/project/solve', {
       id, input, memory, instructions
     })

@@ -1,106 +1,125 @@
 <div class="wrapper">
-    <div class="left-wrapper">
-      <div class="left-upper-wrapper border">
-        <h1 class="inner">{{project.title}}</h1>
-        <p class="inner">{{project.description}}</p>
-      </div>
-      <div class="left-lower-wrapper border">
-        <h1 class="inner">Available Instructions</h1>
-        <button mat-raised-button [style]="'background-color:' + inst.color" *ngFor="let inst of prob.instructions"
-          class="inst-btn inner" (click)="add(inst)">
-          {{inst.name}}
-        </button>
-        <button mat-fab class="inner del-btn" (click)="delete()">
-          <mat-icon>delete</mat-icon>
-        </button>
-      </div>
+  <div class="left-wrapper">
+    <div class="left-upper-wrapper border">
+      <h1 class="inner">{{project.title}}</h1>
+      <p class="inner">{{project.description}}</p>
     </div>
-    <div class="right-wrapper">
-      <div class="right-upper-wrapper border">
-        <ngx-graph [view]="windowSize" [showMiniMap]="true" [links]="links" [nodes]="nodes" [animate]="true"
-          [curve]="curve" [draggingEnabled]="false" class="inner" [update$]="update$" [center$]="center$">
-          <ng-template #defsTemplate>
-            <svg:marker id="arrow" viewBox="0 -5 10 10" refX="8" refY="0" markerWidth="4" markerHeight="4" orient="auto">
-              <svg:path d="M0,-5L10,0L0,5" class="arrow-head" />
-            </svg:marker>
-          </ng-template>
-  
-          <ng-template #nodeTemplate let-node>
-            <svg:g (click)="select(node)">
-              <rect [attr.width]="node.dimension.width" [attr.height]="node.dimension.height" stroke="plum"
-                stroke-width="6" fill="None" rx="5" *ngIf="node.isSelected" />
-              <rect [attr.width]="node.dimension.width" [attr.height]="node.dimension.height" stroke="coral"
-                stroke-width="6" fill="None" rx="5" *ngIf="node.isActive" />
-              <svg:rect [attr.width]="node.dimension.width" [attr.height]="node.dimension.height"
-                [style]="'fill: '+ node.color" rx="5" />
-              <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.dimension.height / 2"
-                style="fill:azure">{{node.label}}</svg:text>
-            </svg:g>
-          </ng-template>
-  
-          <ng-template #linkTemplate let-link>
-            <svg:g class="edge">
-              <svg:path class="line" stroke-width="2" marker-end="url(#arrow)">
-              </svg:path>
-              <svg:text class="edge-label" text-anchor="middle">
-                <textPath class="text-path" [attr.href]="'#' + link.id" [style.dominant-baseline]="link.dominantBaseline"
-                  startOffset="50%">
-                  {{link.label}}
-                </textPath>
-              </svg:text>
-            </svg:g>
-          </ng-template>
-        </ngx-graph>
+    <div class="left-lower-wrapper border">
+      <mat-tab-group>
+        <mat-tab label="Available Instructions">
+          <button mat-raised-button [style]="'background-color:' + inst.color" *ngFor="let inst of prob.instructions"
+            class="inst-btn inner" (click)="add(inst)">
+            {{inst.name}}
+          </button>
+        </mat-tab>
+        <mat-tab label="My Modules">
+          <button mat-raised-button style="color: orange;" *ngFor="let module of modules" (click)="add(module)"
+            class="inst-btn inner">
+            {{module.name}}
+          </button>
+        </mat-tab>
+      </mat-tab-group>
+
+      <button mat-fab class="inner del-btn" (click)="delete()">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+  </div>
+  <div class="right-wrapper">
+    <div class="right-upper-wrapper border">
+      <ngx-graph [view]="windowSize" [showMiniMap]="true" [links]="links" [nodes]="nodes" [animate]="true"
+        [curve]="curve" [draggingEnabled]="false" class="inner" [update$]="update$" [center$]="center$">
+        <ng-template #defsTemplate>
+          <svg:marker id="arrow" viewBox="0 -5 10 10" refX="8" refY="0" markerWidth="4" markerHeight="4" orient="auto">
+            <svg:path d="M0,-5L10,0L0,5" class="arrow-head" />
+          </svg:marker>
+        </ng-template>
+
+        <ng-template #nodeTemplate let-node>
+          <svg:g (click)="select(node)">
+            <rect [attr.width]="node.dimension.width" [attr.height]="node.dimension.height" stroke="plum"
+              stroke-width="6" fill="None" rx="5" *ngIf="node.isSelected" />
+            <rect [attr.width]="node.dimension.width" [attr.height]="node.dimension.height" stroke="coral"
+              stroke-width="6" fill="None" rx="5" *ngIf="node.isActive" />
+            <svg:rect [attr.width]="node.dimension.width" [attr.height]="node.dimension.height"
+              [style]="'fill: '+ node.color" rx="5" />
+            <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.dimension.height / 2"
+              style="fill:azure">{{node.label + (node.canExpand ? (node.isExpanded ? ' +' : ' -') : '')}}</svg:text>
+          </svg:g>
+        </ng-template>
+
+        <ng-template #linkTemplate let-link>
+          <svg:g class="edge">
+            <svg:path class="line" stroke-width="2" marker-end="url(#arrow)">
+            </svg:path>
+            <svg:text class="edge-label" text-anchor="middle">
+              <textPath class="text-path" [attr.href]="'#' + link.id" [style.dominant-baseline]="link.dominantBaseline"
+                startOffset="50%">
+                {{link.label}}
+              </textPath>
+            </svg:text>
+          </svg:g>
+        </ng-template>
+      </ngx-graph>
+    </div>
+    <div class="right-lower-wrapper">
+      <div class="control-panel border">
+        <h1 class="inner">Control Panel</h1>
+        <button mat-flat-button class="inner control-btn" color="primary" (click)="update()">
+          Update</button>
+        <button mat-flat-button class="inner control-btn" color="primary" (click)="execute()">
+          Execute</button>
+        <button mat-flat-button class="inner control-btn" color="primary" (click)="initInfo()">
+          Init
+        </button>
+        <button mat-flat-button class="inner control-btn" color="warning" (click)="play()"
+          [disabled]="!hasSubmitted">Play</button>
+        <button mat-flat-button class="inner control-btn" color="warning" (click)="nextStep()"
+          [disabled]="!hasSubmitted">Next Step</button>
+        <button mat-flat-button class="inner control-btn" color="warning" (click)="prevStep()"
+          [disabled]="!hasSubmitted">Prev Step</button>
+        <button mat-flat-button class="inner control-btn" color="accent" (click)="refresh()"
+          [disabled]="!hasSubmitted">Refresh</button>
       </div>
-      <div class="right-lower-wrapper">
-        <div class="control-panel border">
-          <h1 class="inner">Control Panel -- {{state}}</h1>
-          <button mat-flat-button class="inner control-btn" color="primary" (click)="update()">Update</button>
-          <button [disabled]="!hasSubmitted" mat-flat-button class="inner control-btn" color="warning" (click)="play()">Play</button>
-          <button [disabled]="!hasSubmitted" mat-flat-button class="inner control-btn" color="warning" (click)="nextStep()">Next Step</button>
-          <button [disabled]="!hasSubmitted" mat-flat-button class="inner control-btn" color="warning" (click)="prevStep()">Prev Step</button>
-          <button [disabled]="!hasSubmitted" mat-flat-button class="inner control-btn" color="accent" (click)="refresh()">Refresh</button>
-        </div>
-        <div class="memory-bank border">
-          <h1 style="margin:2%">Information</h1>
-          <div style="margin-top: 2%;margin-left:3%">
-            <mat-chip-list>
-              <mat-chip>Current Value</mat-chip>
-              <mat-chip style="margin-left:2%;">{{hand}}</mat-chip>
-            </mat-chip-list>
-          </div>
-  
-          <div style="margin-top: 2%;margin-left: 3%;">
-            <mat-chip-list>
-              <mat-chip>Memory Bank</mat-chip>
-              <mat-chip *ngFor="let mem of memory; let i=index" class="mem-item" style="margin-left: 1%;"
-                (click)="selectMemory(i)">
-                <span>{{i}}: </span>
-                <span style="width: 100%;text-align:center">{{mem}}</span>
-              </mat-chip>
-            </mat-chip-list>
-          </div>
-  
+      <div class="memory-bank border">
+        <h1 style="margin:2%">Information</h1>
+        <div style="margin-top: 2%;margin-left:3%">
           <mat-chip-list>
-            <div class="item-wrapper">
-              <mat-chip style="margin-left: 2%;width: 9%;justify-content: center;">Inputs</mat-chip>
-              <mat-chip *ngFor="let mem of inputs; let i=index" style="margin-left: 2%; flex: 0 0 auto;"
-                (click)="selectMemory(i)">
-                {{mem}}
-              </mat-chip>
-            </div>
+            <mat-chip>Current Value</mat-chip>
+            <mat-chip style="margin-left:2%;">{{hand}}</mat-chip>
           </mat-chip-list>
-  
-          <mat-chip-list>
-            <div class="item-wrapper">
-              <mat-chip style="margin-left: 2%;width: 9%;justify-content: center;">Outputs</mat-chip>
-              <mat-chip *ngFor="let mem of outputs; let i=index" style="margin-left: 2%;" (click)="selectMemory(i)">
-                {{mem}}
-              </mat-chip>
-            </div>
-          </mat-chip-list>
-  
         </div>
+
+        <div style="margin-top: 2%;margin-left: 3%;">
+          <mat-chip-list>
+            <mat-chip>Memory Bank</mat-chip>
+            <mat-chip *ngFor="let mem of memory; let i=index" class="mem-item" style="margin-left: 1%;"
+              (click)="selectMemory(i)">
+              <span>{{i}}: </span>
+              <span style="width: 100%;text-align:center">{{mem}}</span>
+            </mat-chip>
+          </mat-chip-list>
+        </div>
+
+        <mat-chip-list>
+          <div class="item-wrapper">
+            <mat-chip style="margin-left: 2%;width: 9%;justify-content: center;">Inputs</mat-chip>
+            <mat-chip *ngFor="let mem of inputs; let i=index" style="margin-left: 2%; flex: 0 0 auto;">
+              {{mem}}
+            </mat-chip>
+          </div>
+        </mat-chip-list>
+
+        <mat-chip-list>
+          <div class="item-wrapper">
+            <mat-chip style="margin-left: 2%;width: 9%;justify-content: center;">Outputs</mat-chip>
+            <mat-chip *ngFor="let mem of outputs; let i=index" style="margin-left: 2%;">
+              {{mem}}
+            </mat-chip>
+          </div>
+        </mat-chip-list>
+
       </div>
     </div>
   </div>
+</div>

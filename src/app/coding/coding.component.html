@@ -84,8 +84,7 @@
         <mat-chip-list>
           <div class="item-wrapper">
             <mat-chip style="margin-left: 2%;width: 9%;justify-content: center;">Inputs</mat-chip>
-            <mat-chip *ngFor="let mem of inputs; let i=index" style="margin-left: 2%; flex: 0 0 auto;"
-              (click)="selectMemory(i)">
+            <mat-chip *ngFor="let mem of inputs; let i=index" style="margin-left: 2%; flex: 0 0 auto;">
               {{mem}}
             </mat-chip>
           </div>
@@ -94,7 +93,7 @@
         <mat-chip-list>
           <div class="item-wrapper">
             <mat-chip style="margin-left: 2%;width: 9%;justify-content: center;">Truths</mat-chip>
-            <mat-chip *ngFor="let mem of truths; let i=index" style="margin-left: 2%;" (click)="selectMemory(i)">
+            <mat-chip *ngFor="let mem of truths; let i=index" style="margin-left: 2%;">
               {{mem}}
             </mat-chip>
           </div>
@@ -103,7 +102,7 @@
         <mat-chip-list>
           <div class="item-wrapper">
             <mat-chip style="margin-left: 2%;width: 9%;justify-content: center;">Outputs</mat-chip>
-            <mat-chip *ngFor="let mem of outputs; let i=index" style="margin-left: 2%;" (click)="selectMemory(i)">
+            <mat-chip *ngFor="let mem of outputs; let i=index" style="margin-left: 2%;">
               {{mem}}
             </mat-chip>
           </div>

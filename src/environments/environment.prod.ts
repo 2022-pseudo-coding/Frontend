@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  SOCKET_URL: 'http://124.220.33.48:9090',
-  API_URL: 'http://124.220.33.48:8080'
+  SOCKET_URL: 'http://1.15.246.121:9090',
+  API_URL: 'http://1.15.246.121:8080'
 };
